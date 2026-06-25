@@ -861,6 +861,7 @@ run `:Lazy clean`.
 ## Behaviors (autocmds)
 
 - Yanked text flashes briefly.
+
 - Reopening a file returns you to your last cursor position.
 - `q` closes help/quickfix/man/lspinfo/checkhealth windows.
 
