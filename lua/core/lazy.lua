@@ -1,0 +1,40 @@
+-- Bootstrap lazy.nvim (the plugin manager) and load specs from lua/plugins/.
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local repo = "https://github.com/folke/lazy.nvim.git"
+  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", repo, lazypath })
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_echo({
+      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+      { out, "WarningMsg" },
+    }, true, {})
+    os.exit(1)
+  end
+end
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup({
+  spec = {
+    { import = "plugins" },
+  },
+  defaults = { lazy = true }, -- lazy-load by default; keeps startup fast
+  install = { colorscheme = { "rose-pine" } },
+  checker = { enabled = false, notify = false }, -- no startup update polling; run :Lazy check manually
+  change_detection = { notify = false },
+  performance = {
+    rtp = {
+      -- Disable built-in plugins we don't need for a snappier startup
+      disabled_plugins = {
+        "gzip",
+        "tarPlugin",
+        "tohtml",
+        "tutor",
+        "zipPlugin",
+        "netrwPlugin",
+      },
+    },
+  },
+})
+
+-- Handy: open the plugin manager
+vim.keymap.set("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "Lazy (plugin manager)" })
