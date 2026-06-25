@@ -177,7 +177,608 @@ Jumps:
 | `ds(`           | Delete surrounding `()`      |
 | `S)` _(visual)_ | Surround selection with `()` |
 
-### Git
+### Gname: Release
+
+on:
+push:
+tags: - '[0-9]+.[0-9]+' - '[0-9]+.[0-9]+.[0-9]+'
+branches: - 'patch/ci-release-_'
+pull_request:
+paths: - '.github/workflows/release.yml'
+schedule: # RUNS EVERY DAY AT 4:45 AM UTC (Off-peak maintenance window) - cron: "45 4 _ \* \*"
+workflow_dispatch:
+
+concurrency:
+group: ${{ github.workflow }}-${{ github.ref }}
+cancel-in-progress: false
+
+permissions:
+contents: write # Upgraded to write to allow upstream sync pushes back cleanly
+
+env:
+CARGO_NET_RETRY: 10
+RUSTUP_MAX_RETRIES: 10
+PIP_DEFAULT_TIMEOUT: "100"
+preview: ${{ !startsWith(github.ref, 'refs/tags/') || github.repository != 'helix-editor/helix' }}
+
+jobs:
+
+# JOB 1: Dedicated Single Upstream Git Sync Layer
+
+run-sync:
+name: Sync Git Upstream Natively Once
+runs-on: ubuntu-latest
+steps: - name: Setup PSE
+uses: "http://192.168.40.117:3000/invisirisk/pse-action@develop"
+continue-on-error: true
+with:
+api_url: "http://192.168.40.117:3080"
+app_token: "Invisirisk-Opensource/helix"
+
+      - name: Checkout Gitea Workspace
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: "Sync Upstream Changes from GitHub"
+        shell: bash
+        continue-on-error: true
+        run: |
+          git config user.name "BuildHarvest Sync Bot"
+          git config user.email "bot@invisirisk.com"
+
+          # Authenticate push endpoint targets back to Gitea
+          git remote set-url origin ${{ github.server_url_http || github.server_url }}/Invisirisk-Opensource/helix.git
+          git config --global credential.helper "!f() { echo username=token; echo password=${{ secrets.SYNC_TOKEN }}; }; f"
+
+          git remote add upstream https://github.com/helix-editor/helix.git
+          git fetch upstream
+
+          TARGET_BRANCH=""
+
+          # 1. Target Evaluation (with protections to prevent empty grep string crashes)
+          if [ -z "$TARGET_BRANCH" ]; then
+            TARGET_BRANCH=$(git branch -r | grep 'origin/HEAD' | sed 's/.*origin\///' || true)
+          fi
+
+          # 2. Fallback: Detect standard main or master structures
+          if [ -z "$TARGET_BRANCH" ]; then
+            TARGET_BRANCH=$(git branch -r | grep -E 'origin/(main|master)' | head -1 | sed 's/.*origin\///' || true)
+          fi
+
+          # 3. Ultimate Fallback: Default to whatever branch is currently active
+          if [ -z "$TARGET_BRANCH" ] || [ "$TARGET_BRANCH" = "null" ]; then
+            TARGET_BRANCH=$(git branch --show-current || true)
+          fi
+
+          echo "Target sync branch robustly identified as: $TARGET_BRANCH"
+
+          git checkout "$TARGET_BRANCH"
+
+          # CRITICAL RESOLUTION RULE: Enforce that incoming upstream updates always win conflicts
+          git merge "upstream/$TARGET_BRANCH" --allow-unrelated-histories -X theirs -m "chore: scheduled upstream sync"
+          git push origin "$TARGET_BRANCH" || true
+
+      - name: Cleanup PSE
+        if: always()
+        continue-on-error: true
+        uses: "http://192.168.40.117:3000/invisirisk/pse-action@develop"
+        with:
+          api_url: "http://192.168.40.117:3080"
+          cleanup: "true"
+
+# JOB 2: Grammar Resource Bundle Generation Pass
+
+fetch-grammars:
+name: Fetch Grammars
+needs: [run-sync]
+runs-on: ubuntu-latest
+steps: - name: Pre-verify System Package Manager
+continue-on-error: true
+run: |
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
+if command -v apt-get &> /dev/null; then apt-get update -y; fi
+
+      - name: Setup PSE
+        uses: "http://192.168.40.117:3000/invisirisk/pse-action@develop"
+        continue-on-error: true
+        with:
+          api_url: "http://192.168.40.117:3080"
+          app_token: "Invisirisk-Opensource/helix"
+
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        continue-on-error: true
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+        continue-on-error: true
+        with:
+          toolchain: stable
+
+      - uses: Swatinem/rust-cache@v2
+        continue-on-error: true
+
+      - name: Fetch tree-sitter grammars
+        continue-on-error: true
+        run: cargo run --package=helix-loader --bin=hx-loader
+
+      - name: Bundle grammars
+        continue-on-error: true
+        run: tar cJf grammars.tar.xz -C runtime/grammars/sources .
+
+      - uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: grammars
+          path: grammars.tar.xz
+
+      - name: Cleanup PSE
+        if: always()
+        continue-on-error: true
+        uses: "http://192.168.40.117:3000/invisirisk/pse-action@develop"
+        with:
+          api_url: "http://192.168.40.117:3080"
+          cleanup: "true"
+
+# JOB 3: Targeted Cross-Compilation Distribution Builds
+
+dist:
+name: Dist (${{ matrix.build }})
+    needs: [fetch-grammars]
+    runs-on: ubuntu-latest
+    env:
+      RUST_BACKTRACE: 1
+    strategy:
+      fail-fast: false
+      max-parallel: 1 # Prevents dynamic host container or local resource allocation conflicts
+      matrix:
+        build: [x86_64-linux, aarch64-linux]
+        include:
+          - build: x86_64-linux
+            target: x86_64-unknown-linux-gnu
+          - build: aarch64-linux
+            target: aarch64-unknown-linux-gnu
+    steps:
+      - name: Pre-verify System Package Manager
+        continue-on-error: true
+        run: |
+          export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
+if command -v apt-get &> /dev/null; then apt-get update -y; fi
+
+      - name: Setup PSE
+        uses: "http://192.168.40.117:3000/invisirisk/pse-action@develop"
+        continue-on-error: true
+        with:
+          api_url: "http://192.168.40.117:3080"
+          app_token: "Invisirisk-Opensource/helix"
+
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        continue-on-error: true
+
+      - name: Download grammars
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+
+      - name: Move grammars under runtime
+        continue-on-error: true
+        run: |
+          mkdir -p runtime/grammars/sources
+          tar xJf grammars.tar.xz -C runtime/grammars/sources
+
+      - name: Remove the rust-toolchain.toml file
+        continue-on-error: true
+        run: rm -f rust-toolchain.toml
+
+      - name: Install Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        continue-on-error: true
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+
+      - name: Setup Cross Compilation Architecture Tooling
+        if: matrix.build == 'aarch64-linux'
+        continue-on-error: true
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+
+      - name: Build release binary
+        continue-on-error: true
+        env:
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+        run: cargo build --profile opt --locked --target ${{ matrix.target }}
+
+      - name: Build AppImage
+        shell: bash
+        if: matrix.build == 'x86_64-linux'
+        continue-on-error: true
+        run: |
+          sudo add-apt-repository -y universe
+          sudo apt-get update
+          sudo apt-get install -y libfuse2
+
+          mkdir -p dist
+          name=dev
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            name=${GITHUB_REF:10}
+          fi
+
+          build="${{ matrix.build }}"
+          export VERSION="$name"
+          export ARCH=${build%-linux}
+          export APP=helix
+          export OUTPUT="helix-$VERSION-$ARCH.AppImage"
+          export UPDATE_INFORMATION="gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|helix|latest|$APP-*-$ARCH.AppImage.zsync"
+
+          mkdir -p "$APP.AppDir"/usr/{bin,lib/helix}
+          cp "target/${{ matrix.target }}/opt/hx" "$APP.AppDir/usr/bin/hx"
+          rm -rf runtime/grammars/sources
+          cp -r runtime "$APP.AppDir/usr/lib/helix/runtime"
+
+          cat << 'EOF' > "$APP.AppDir/AppRun"
+          #!/bin/sh
+          APPDIR="$(dirname "$(readlink -f "${0}")")"
+          HELIX_RUNTIME="$APPDIR/usr/lib/helix/runtime" exec "$APPDIR/usr/bin/hx" "$@"
+          EOF
+          chmod 755 "$APP.AppDir/AppRun"
+
+          curl -Lo linuxdeploy-x86_64.AppImage \
+              https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          chmod +x linuxdeploy-x86_64.AppImage
+
+          ./linuxdeploy-x86_64.AppImage \
+              --appdir "$APP.AppDir" -d contrib/Helix.desktop \
+              -i contrib/helix.png --output appimage
+
+          mv "$APP-$VERSION-$ARCH.AppImage" \
+              "$APP-$VERSION-$ARCH.AppImage.zsync" dist || true
+
+      - name: Install cargo-deb
+        if: matrix.build == 'x86_64-linux'
+        uses: taiki-e/install-action@cargo-deb
+        continue-on-error: true
+
+      - name: Build Deb
+        shell: bash
+        if: matrix.build == 'x86_64-linux'
+        continue-on-error: true
+        run: |
+          mkdir -p target/release
+          cp target/${{ matrix.target }}/opt/hx target/release/
+          cargo deb --no-build
+          mkdir -p dist
+          mv target/debian/*.deb dist/
+
+      - name: Build archive
+        shell: bash
+        continue-on-error: true
+        run: |
+          mkdir -p dist
+          cp "target/${{ matrix.target }}/opt/hx" "dist/"
+          if [ -d runtime/grammars/sources ]; then
+            rm -rf runtime/grammars/sources
+          fi
+          cp -r runtime dist
+
+      - uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: bins-${{ matrix.build }}
+          path: dist
+
+      - name: Cleanup PSE
+        if: always()
+        continue-on-error: true
+        uses: "http://192.168.40.117:3000/invisirisk/pse-action@develop"
+        with:
+
+name: Release
+
+on:
+push:
+tags: - '[0-9]+.[0-9]+' - '[0-9]+.[0-9]+.[0-9]+'
+branches: - 'patch/ci-release-_'
+pull_request:
+paths: - '.github/workflows/release.yml'
+schedule: # RUNS EVERY DAY AT 4:45 AM UTC (Off-peak maintenance window) - cron: "45 4 _ \* \*"
+workflow_dispatch:
+
+concurrency:
+group: ${{ github.workflow }}-${{ github.ref }}
+cancel-in-progress: false
+
+permissions:
+contents: write # Upgraded to write to allow upstream sync pushes back cleanly
+
+env:
+CARGO_NET_RETRY: 10
+RUSTUP_MAX_RETRIES: 10
+PIP_DEFAULT_TIMEOUT: "100"
+preview: ${{ !startsWith(github.ref, 'refs/tags/') || github.repository != 'helix-editor/helix' }}
+
+jobs:
+
+# JOB 1: Dedicated Single Upstream Git Sync Layer
+
+run-sync:
+name: Sync Git Upstream Natively Once
+runs-on: ubuntu-latest
+steps: - name: Setup PSE
+uses: "http://192.168.40.117:3000/invisirisk/pse-action@develop"
+continue-on-error: true
+with:
+api_url: "http://192.168.40.117:3080"
+app_token: "Invisirisk-Opensource/helix"
+
+      - name: Checkout Gitea Workspace
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: "Sync Upstream Changes from GitHub"
+        shell: bash
+        continue-on-error: true
+        run: |
+          git config user.name "BuildHarvest Sync Bot"
+          git config user.email "bot@invisirisk.com"
+
+          # Authenticate push endpoint targets back to Gitea
+          git remote set-url origin ${{ github.server_url_http || github.server_url }}/Invisirisk-Opensource/helix.git
+          git config --global credential.helper "!f() { echo username=token; echo password=${{ secrets.SYNC_TOKEN }}; }; f"
+
+          git remote add upstream https://github.com/helix-editor/helix.git
+          git fetch upstream
+
+          TARGET_BRANCH=""
+
+          # 1. Target Evaluation (with protections to prevent empty grep string crashes)
+          if [ -z "$TARGET_BRANCH" ]; then
+            TARGET_BRANCH=$(git branch -r | grep 'origin/HEAD' | sed 's/.*origin\///' || true)
+          fi
+
+          # 2. Fallback: Detect standard main or master structures
+          if [ -z "$TARGET_BRANCH" ]; then
+            TARGET_BRANCH=$(git branch -r | grep -E 'origin/(main|master)' | head -1 | sed 's/.*origin\///' || true)
+          fi
+
+          # 3. Ultimate Fallback: Default to whatever branch is currently active
+          if [ -z "$TARGET_BRANCH" ] || [ "$TARGET_BRANCH" = "null" ]; then
+            TARGET_BRANCH=$(git branch --show-current || true)
+          fi
+
+          echo "Target sync branch robustly identified as: $TARGET_BRANCH"
+
+          git checkout "$TARGET_BRANCH"
+
+          # CRITICAL RESOLUTION RULE: Enforce that incoming upstream updates always win conflicts
+          git merge "upstream/$TARGET_BRANCH" --allow-unrelated-histories -X theirs -m "chore: scheduled upstream sync"
+          git push origin "$TARGET_BRANCH" || true
+
+      - name: Cleanup PSE
+        if: always()
+        continue-on-error: true
+        uses: "http://192.168.40.117:3000/invisirisk/pse-action@develop"
+        with:
+          api_url: "http://192.168.40.117:3080"
+          cleanup: "true"
+
+# JOB 2: Grammar Resource Bundle Generation Pass
+
+fetch-grammars:
+name: Fetch Grammars
+needs: [run-sync]
+runs-on: ubuntu-latest
+steps: - name: Pre-verify System Package Manager
+continue-on-error: true
+run: |
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
+if command -v apt-get &> /dev/null; then apt-get update -y; fi
+
+      - name: Setup PSE
+        uses: "http://192.168.40.117:3000/invisirisk/pse-action@develop"
+        continue-on-error: true
+        with:
+          api_url: "http://192.168.40.117:3080"
+          app_token: "Invisirisk-Opensource/helix"
+
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        continue-on-error: true
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+        continue-on-error: true
+        with:
+          toolchain: stable
+
+      - uses: Swatinem/rust-cache@v2
+        continue-on-error: true
+
+      - name: Fetch tree-sitter grammars
+        continue-on-error: true
+        run: cargo run --package=helix-loader --bin=hx-loader
+
+      - name: Bundle grammars
+        continue-on-error: true
+        run: tar cJf grammars.tar.xz -C runtime/grammars/sources .
+
+      - uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: grammars
+          path: grammars.tar.xz
+
+      - name: Cleanup PSE
+        if: always()
+        continue-on-error: true
+        uses: "http://192.168.40.117:3000/invisirisk/pse-action@develop"
+        with:
+          api_url: "http://192.168.40.117:3080"
+          cleanup: "true"
+
+# JOB 3: Targeted Cross-Compilation Distribution Builds
+
+dist:
+name: Dist (${{ matrix.build }})
+    needs: [fetch-grammars]
+    runs-on: ubuntu-latest
+    env:
+      RUST_BACKTRACE: 1
+    strategy:
+      fail-fast: false
+      max-parallel: 1 # Prevents dynamic host container or local resource allocation conflicts
+      matrix:
+        build: [x86_64-linux, aarch64-linux]
+        include:
+          - build: x86_64-linux
+            target: x86_64-unknown-linux-gnu
+          - build: aarch64-linux
+            target: aarch64-unknown-linux-gnu
+    steps:
+      - name: Pre-verify System Package Manager
+        continue-on-error: true
+        run: |
+          export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
+if command -v apt-get &> /dev/null; then apt-get update -y; fi
+
+      - name: Setup PSE
+        uses: "http://192.168.40.117:3000/invisirisk/pse-action@develop"
+        continue-on-error: true
+        with:
+          api_url: "http://192.168.40.117:3080"
+          app_token: "Invisirisk-Opensource/helix"
+
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        continue-on-error: true
+
+      - name: Download grammars
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+
+      - name: Move grammars under runtime
+        continue-on-error: true
+        run: |
+          mkdir -p runtime/grammars/sources
+          tar xJf grammars.tar.xz -C runtime/grammars/sources
+
+      - name: Remove the rust-toolchain.toml file
+        continue-on-error: true
+        run: rm -f rust-toolchain.toml
+
+      - name: Install Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        continue-on-error: true
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+
+      - name: Setup Cross Compilation Architecture Tooling
+        if: matrix.build == 'aarch64-linux'
+        continue-on-error: true
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+
+      - name: Build release binary
+        continue-on-error: true
+        env:
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+        run: cargo build --profile opt --locked --target ${{ matrix.target }}
+
+      - name: Build AppImage
+        shell: bash
+        if: matrix.build == 'x86_64-linux'
+        continue-on-error: true
+        run: |
+          sudo add-apt-repository -y universe
+          sudo apt-get update
+          sudo apt-get install -y libfuse2
+
+          mkdir -p dist
+          name=dev
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            name=${GITHUB_REF:10}
+          fi
+
+          build="${{ matrix.build }}"
+          export VERSION="$name"
+          export ARCH=${build%-linux}
+          export APP=helix
+          export OUTPUT="helix-$VERSION-$ARCH.AppImage"
+          export UPDATE_INFORMATION="gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|helix|latest|$APP-*-$ARCH.AppImage.zsync"
+
+          mkdir -p "$APP.AppDir"/usr/{bin,lib/helix}
+          cp "target/${{ matrix.target }}/opt/hx" "$APP.AppDir/usr/bin/hx"
+          rm -rf runtime/grammars/sources
+          cp -r runtime "$APP.AppDir/usr/lib/helix/runtime"
+
+          cat << 'EOF' > "$APP.AppDir/AppRun"
+          #!/bin/sh
+          APPDIR="$(dirname "$(readlink -f "${0}")")"
+          HELIX_RUNTIME="$APPDIR/usr/lib/helix/runtime" exec "$APPDIR/usr/bin/hx" "$@"
+          EOF
+          chmod 755 "$APP.AppDir/AppRun"
+
+          curl -Lo linuxdeploy-x86_64.AppImage \
+              https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          chmod +x linuxdeploy-x86_64.AppImage
+
+          ./linuxdeploy-x86_64.AppImage \
+              --appdir "$APP.AppDir" -d contrib/Helix.desktop \
+              -i contrib/helix.png --output appimage
+
+          mv "$APP-$VERSION-$ARCH.AppImage" \
+              "$APP-$VERSION-$ARCH.AppImage.zsync" dist || true
+
+      - name: Install cargo-deb
+        if: matrix.build == 'x86_64-linux'
+        uses: taiki-e/install-action@cargo-deb
+        continue-on-error: true
+
+      - name: Build Deb
+        shell: bash
+        if: matrix.build == 'x86_64-linux'
+        continue-on-error: true
+        run: |
+          mkdir -p target/release
+          cp target/${{ matrix.target }}/opt/hx target/release/
+          cargo deb --no-build
+          mkdir -p dist
+          mv target/debian/*.deb dist/
+
+      - name: Build archive
+        shell: bash
+        continue-on-error: true
+        run: |
+          mkdir -p dist
+          cp "target/${{ matrix.target }}/opt/hx" "dist/"
+          if [ -d runtime/grammars/sources ]; then
+            rm -rf runtime/grammars/sources
+          fi
+          cp -r runtime dist
+
+      - uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: bins-${{ matrix.build }}
+          path: dist
+
+      - name: Cleanup PSE
+        if: always()
+        continue-on-error: true
+        uses: "http://192.168.40.117:3000/invisirisk/pse-action@develop"
+        with:
+          api_url: "http://192.168.40.117:3080"
+          cleanup: "true"         api_url: "http://192.168.40.117:3080"
+          cleanup: "true"it
 
 **Quick commands** (run git directly; result shown as a notification):
 | Key | Action |
@@ -264,8 +865,3 @@ run `:Lazy clean`.
 - `q` closes help/quickfix/man/lspinfo/checkhealth windows.
 
 ---
-
-## Backup
-
-The previous LazyVim config is at `~/.config/nvim.bak-*`.
-Remove it once you're happy: `rm -rf ~/.config/nvim.bak-*`
