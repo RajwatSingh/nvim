@@ -44,3 +44,28 @@ map("t", "<C-h>", [[<C-\><C-n><C-w>h]], { desc = "Terminal: go left" })
 map("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line diagnostics" })
 map("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = "Next diagnostic" })
 map("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, { desc = "Prev diagnostic" })
+
+-- Git quick commands. Output is shown as a notification; for interactive
+-- flows use lazygit (<leader>gg). Browse pickers live in plugins/telescope.lua.
+local function git(args, ok_msg)
+  vim.system({ "git", unpack(args) }, { text = true }, function(res)
+    vim.schedule(function()
+      local out = vim.trim((res.stdout or "") .. (res.stderr or ""))
+      if res.code == 0 then
+        vim.notify(out ~= "" and out or (ok_msg or "Done"), vim.log.levels.INFO, { title = "git" })
+      else
+        vim.notify(out ~= "" and out or "git failed", vim.log.levels.ERROR, { title = "git" })
+      end
+    end)
+  end)
+end
+
+map("n", "<leader>ga", function() git({ "add", "-A" }, "Staged all changes") end, { desc = "Git stage all" })
+map("n", "<leader>gc", function()
+  vim.ui.input({ prompt = "Commit message: " }, function(msg)
+    if msg and msg ~= "" then git({ "commit", "-m", msg }) end
+  end)
+end, { desc = "Git commit" })
+map("n", "<leader>gp", function() git({ "push" }, "Pushed") end, { desc = "Git push" })
+map("n", "<leader>gl", function() git({ "pull" }, "Pulled") end, { desc = "Git pull" })
+map("n", "<leader>gf", function() git({ "fetch", "--all", "--prune" }, "Fetched") end, { desc = "Git fetch (all)" })

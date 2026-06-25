@@ -179,6 +179,22 @@ Jumps:
 
 ### Git
 
+**Quick commands** (run git directly; result shown as a notification):
+| Key | Action |
+|-----|--------|
+| `<leader>ga` | Stage all changes (`git add -A`) |
+| `<leader>gc` | Commit (prompts for a message) |
+| `<leader>gp` | Push |
+| `<leader>gl` | Pull |
+| `<leader>gf` | Fetch all (with prune) |
+
+**Browse** (Telescope pickers):
+| Key | Action |
+|-----|--------|
+| `<leader>gs` | Status — stage/unstage & diff files |
+| `<leader>gL` | Log — browse commits |
+| `<leader>gB` | Branches — switch / inspect |
+
 **gitsigns** (inline, per-hunk):
 | Key | Action |
 |-----|--------|
@@ -190,7 +206,7 @@ Jumps:
 | `<leader>hb` | Blame current line (full) |
 | `<leader>gb` | Toggle inline line-blame |
 
-**lazygit** (full TUI):
+**lazygit** (full TUI — best for interactive flows like rebase/merge):
 | Key | Action |
 |-----|--------|
 | `<leader>gg` | Open lazygit in a floating window |

@@ -16,6 +16,10 @@ return {
       { "<leader>fd", "<cmd>Telescope diagnostics<cr>", desc = "Diagnostics" },
       { "<leader>fw", "<cmd>Telescope grep_string<cr>", desc = "Grep word under cursor" },
       { "<leader>fc", "<cmd>Telescope colorscheme<cr>", desc = "Colorscheme" },
+      -- Git browse pickers (quick git actions live in core/keymaps.lua)
+      { "<leader>gs", "<cmd>Telescope git_status<cr>", desc = "Git status" },
+      { "<leader>gL", "<cmd>Telescope git_commits<cr>", desc = "Git log (commits)" },
+      { "<leader>gB", "<cmd>Telescope git_branches<cr>", desc = "Git branches" },
     },
     opts = {
       defaults = {
