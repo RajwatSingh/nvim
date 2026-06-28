@@ -36,7 +36,6 @@ map("n", "<leader>w", "<cmd>write<cr>", { desc = "Save file" })
 map("n", "<leader>q", "<cmd>quit<cr>", { desc = "Quit window" })
 
 -- Terminal
-map("n", "<S-a>", "<cmd>vertical terminal<cr>", { desc = "Open vertical terminal" })
 map("t", "<S-z>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 map("t", "<C-h>", [[<C-\><C-n><C-w>h]], { desc = "Terminal: go left" })
 
@@ -69,3 +68,46 @@ end, { desc = "Git commit" })
 map("n", "<leader>gp", function() git({ "push" }, "Pushed") end, { desc = "Git push" })
 map("n", "<leader>gl", function() git({ "pull" }, "Pulled") end, { desc = "Git pull" })
 map("n", "<leader>gf", function() git({ "fetch", "--all", "--prune" }, "Fetched") end, { desc = "Git fetch (all)" })
+
+-- ---------------------------------------------------------------------------
+-- Additional keybindings (purely additive — nothing above is changed).
+-- ---------------------------------------------------------------------------
+
+-- Save with Ctrl-S from any mode (returns to normal mode after)
+map({ "n", "i", "v" }, "<C-s>", "<cmd>write<cr><Esc>", { desc = "Save file" })
+
+-- Buffers: a leader-based delete that doesn't collide with the existing maps
+map("n", "<leader>bd", "<cmd>bdelete<cr>", { desc = "Delete buffer" })
+map("n", "<leader>bD", "<cmd>bdelete!<cr>", { desc = "Delete buffer (force)" })
+
+-- New empty file
+map("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New file" })
+
+-- Window splits
+map("n", "<leader>sv", "<C-w>v", { desc = "Split vertical" })
+map("n", "<leader>sh", "<C-w>s", { desc = "Split horizontal" })
+map("n", "<leader>se", "<C-w>=", { desc = "Equalize splits" })
+map("n", "<leader>sx", "<cmd>close<cr>", { desc = "Close split" })
+
+-- Resize windows with Ctrl + arrows
+map("n", "<C-Up>", "<cmd>resize +2<cr>", { desc = "Grow window height" })
+map("n", "<C-Down>", "<cmd>resize -2<cr>", { desc = "Shrink window height" })
+map("n", "<C-Left>", "<cmd>vertical resize -2<cr>", { desc = "Shrink window width" })
+map("n", "<C-Right>", "<cmd>vertical resize +2<cr>", { desc = "Grow window width" })
+
+-- Quickfix / location list navigation
+map("n", "]q", "<cmd>cnext<cr>", { desc = "Next quickfix item" })
+map("n", "[q", "<cmd>cprevious<cr>", { desc = "Prev quickfix item" })
+map("n", "<leader>xq", "<cmd>copen<cr>", { desc = "Open quickfix list" })
+
+-- Paste over a selection without clobbering the yank register
+map("x", "<leader>p", [["_dP]], { desc = "Paste (keep yank)" })
+-- Delete without yanking
+map({ "n", "x" }, "<leader>d", [["_d]], { desc = "Delete (no yank)" })
+
+-- Replace the word under the cursor across the file
+map("n", "<leader>sr", [[:%s/\<<C-r><C-w>\>//g<Left><Left>]], { desc = "Replace word under cursor" })
+
+-- Leader-based terminals (additive alternative; your <S-a> map is untouched)
+map("n", "<leader>tv", "<cmd>vertical terminal<cr>", { desc = "Vertical terminal" })
+map("n", "<leader>th", "<cmd>split | terminal<cr>", { desc = "Horizontal terminal" })

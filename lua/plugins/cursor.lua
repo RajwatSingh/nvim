@@ -17,9 +17,9 @@ return {
       smear_between_neighbor_lines = true,
       smear_insert_mode = false, -- keep typing crisp; only animate navigation
 
-      -- Visible on a transparent background (Catppuccin rosewater).
+      -- Matches rose-pine's "rose" accent so the trail fits the theme.
       -- Set to "none" to use the terminal's cursor color instead.
-      cursor_color = "#f5e0dc",
+      cursor_color = "#ebbcba",
     },
   },
 }

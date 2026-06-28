@@ -13,11 +13,15 @@ return {
         globalstatus = true,
         component_separators = { left = "", right = "" },
         section_separators = { left = "", right = "" },
-        disabled_filetypes = { statusline = { "dashboard", "NvimTree" } },
+        disabled_filetypes = { statusline = { "ministarter", "starter", "NvimTree" } },
       },
       sections = {
+        lualine_a = { "mode" },
+        lualine_b = { "branch", "diff" },
         lualine_c = { { "filename", path = 1 } },
         lualine_x = { "diagnostics", "filetype" },
+        lualine_y = { "progress" },
+        lualine_z = { "location" },
       },
     },
   },
@@ -67,10 +71,14 @@ return {
     opts = {
       preset = "modern",
       spec = {
+        { "<leader>b", group = "buffer" },
         { "<leader>c", group = "code / lsp" },
         { "<leader>f", group = "find (telescope)" },
         { "<leader>g", group = "git" },
         { "<leader>h", group = "git hunks" },
+        { "<leader>s", group = "split / search" },
+        { "<leader>t", group = "terminal" },
+        { "<leader>x", group = "quickfix / trouble" },
       },
     },
     keys = {
