@@ -6,26 +6,62 @@
 - **Leader key:** `Space`
 - **Discoverability:** press `<leader>` and pause — **which-key** pops up the menu.
   Or `<leader>fk` to fuzzy-search every keymap.
-- Opens straight to an empty buffer
+- Opens to a start screen (**mini.starter**) with recent files and quick actions
 
 ---
 
 ## Requirements
 
-| Tool              | Why                        | Install                       |
-| ----------------- | -------------------------- | ----------------------------- |
-| Neovim ≥ 0.11     | core                       | (installed)                   |
-| `gcc` / `make`    | compile treesitter parsers | `sudo dnf install gcc make`   |
-| `git`             | plugins, gitsigns, lazygit | (installed)                   |
-| `node` / `npm`    | some LSP servers           | (installed)                   |
-| `ripgrep`         | Telescope live-grep        | (installed)                   |
-| A Nerd Font       | icons                      | your terminal already has one |
-| `lazygit`         | git TUI (`<leader>gg`)     | (installed)                   |
-| `fd` _(optional)_ | faster file finding        | `sudo dnf install fd-find`    |
+| Tool              | Why                        |
+| ----------------- | -------------------------- |
+| Neovim ≥ 0.11     | core                       |
+| C compiler + `make` | compile treesitter parsers |
+| `git`             | plugins, gitsigns, lazygit |
+| `node` / `npm`    | some LSP servers           |
+| `ripgrep`         | Telescope live-grep        |
+| `lazygit`         | git TUI (`<leader>gg`)     |
+| `fd` _(optional)_ | faster file finding        |
+| A Nerd Font       | icons (set it in your terminal) |
 
 LSP servers & formatters install themselves via **mason** on first launch
 (`lua_ls`, `pyright`, `ruff`, `ts_ls`, `html`, `cssls`, `jsonls`; `stylua`,
 `prettierd`).
+
+### Install
+
+**macOS** — [Homebrew](https://brew.sh):
+
+```sh
+brew install neovim git node ripgrep lazygit fd
+# C compiler/make: install Xcode Command Line Tools
+xcode-select --install
+```
+
+**Linux**
+
+```sh
+# Debian / Ubuntu
+sudo apt install neovim git nodejs npm ripgrep fd-find build-essential
+# lazygit: see https://github.com/jesseduffield/lazygit#installation
+
+# Fedora
+sudo dnf install neovim git nodejs npm ripgrep fd-find lazygit gcc make
+
+# Arch
+sudo pacman -S neovim git nodejs npm ripgrep fd lazygit base-devel
+```
+
+> On Debian/Ubuntu `fd` is the `fdfind` binary; symlink it with `ln -s $(which fdfind) ~/.local/bin/fd`.
+
+**Windows** — [winget](https://learn.microsoft.com/windows/package-manager/) (or [Scoop](https://scoop.sh)):
+
+```powershell
+winget install Neovim.Neovim Git.Git OpenJS.NodeJS BurntSushi.ripgrep.MSVC JesseDuffield.lazygit sharkdp.fd
+# C compiler/make: install MSVC Build Tools or use zig/mingw
+winget install --id Microsoft.VisualStudio.2022.BuildTools
+```
+
+> A [Nerd Font](https://www.nerdfonts.com/) is needed on every platform for icons to render — install one and select it in your terminal (e.g. `JetBrainsMono Nerd Font`).
 
 ---
 
@@ -34,14 +70,15 @@ LSP servers & formatters install themselves via **mason** on first launch
 ```
 init.lua                entry point
 lua/core/
-  options.lua           editor options (leader, UI, indentation, ...)
+  options.lua           editor options (leader, UI, indentation, folding, ...)
   keymaps.lua           general keymaps (non-plugin)
   autocmds.lua          yank-highlight, restore cursor, q-to-close, terminal
+  folding.lua           custom fold text (collapsed-block summary)
   lazy.lua              plugin-manager bootstrap
 lua/plugins/            one file per concern
   lsp.lua  completion.lua  telescope.lua  git.lua  explorer.lua
   treesitter.lua  coding.lua  formatting.lua  editing.lua  ui.lua
-  navigation.lua  colorscheme.lua  cursor.lua  animate.lua
+  navigation.lua  colorscheme.lua  cursor.lua  animate.lua  dashboard.lua
 ```
 
 ---
@@ -67,24 +104,37 @@ lua/plugins/            one file per concern
 | `J`                  | Join line below (cursor stays put)      |
 | `J` / `K` _(visual)_ | Move selected lines down / up           |
 | `<` / `>` _(visual)_ | Indent left / right, keep selection     |
-| `<leader>w`          | Save file                               |
+| `<leader>w` / `<C-s>` | Save file (`<C-s>` works in any mode)  |
 | `<leader>q`          | Quit window                             |
+| `<leader>fn`         | New empty file                          |
+| `<leader>p` _(visual)_ | Paste over selection, keep yank register |
+| `<leader>d`          | Delete without yanking                  |
+| `<leader>sr`         | Replace the word under the cursor in the file |
 | `<leader>L`          | Open plugin manager (Lazy)              |
 | `<leader>?`          | Show keymaps for current buffer         |
 
 ### Buffers & windows
 
-| Key                 | Action                                  |
-| ------------------- | --------------------------------------- |
-| `<Tab>` / `<S-Tab>` | Next / previous buffer                  |
-| `<S-q>`             | Close (delete) buffer                   |
-| `<C-h/j/k/l>`       | Move to left / down / up / right window |
+| Key                          | Action                                  |
+| ---------------------------- | --------------------------------------- |
+| `<Tab>` / `<S-Tab>`          | Next / previous buffer                  |
+| `<S-q>` / `<leader>bd`       | Close (delete) buffer                   |
+| `<leader>bD`                 | Close buffer (force, discard changes)   |
+| `<C-h/j/k/l>`                | Move to left / down / up / right window |
+| `<leader>sv` / `<leader>sh`  | Split window vertical / horizontal      |
+| `<leader>se`                 | Equalize split sizes                    |
+| `<leader>sx`                 | Close current split                     |
+| `<C-Up>` / `<C-Down>`        | Grow / shrink window height             |
+| `<C-Left>` / `<C-Right>`     | Shrink / grow window width              |
+| `]q` / `[q`                  | Next / previous quickfix item           |
+| `<leader>xq`                 | Open the quickfix list                  |
 
 ### Terminal
 
 | Key                     | Action                              |
 | ----------------------- | ----------------------------------- |
-| `<S-a>`                 | Open a terminal in a vertical split |
+| `<S-a>` / `<leader>tv`  | Open a terminal in a vertical split |
+| `<leader>th`            | Open a terminal in a horizontal split |
 | `<S-z>` _(in terminal)_ | Leave terminal-insert → normal mode |
 | `<C-h>` _(in terminal)_ | Jump to the window on the left      |
 
@@ -177,6 +227,8 @@ Jumps:
 | `ds(`           | Delete surrounding `()`      |
 | `S)` _(visual)_ | Surround selection with `()` |
 
+### Git
+
 **Quick commands** (run git directly; result shown as a notification):
 | Key | Action |
 |-----|--------|
@@ -224,6 +276,20 @@ HTML/JSX tags auto-close and auto-rename (nvim-ts-autotag).
 
 ---
 
+## Folding
+
+Treesitter-based folds, **open by default** (`foldlevel = 99`). A collapsed block
+shows its first line plus a compact summary — e.g. `team_strength = { ⋯ 30 entries } ▾`
+(custom fold text lives in `lua/core/folding.lua`).
+
+| Key         | Action                          |
+| ----------- | ------------------------------- |
+| `za`        | Toggle fold under the cursor    |
+| `zc` / `zo` | Close / open fold               |
+| `zR` / `zM` | Open all / close all folds      |
+
+---
+
 ## Useful commands
 
 | Command                           | Purpose                                          |
@@ -238,20 +304,15 @@ HTML/JSX tags auto-close and auto-rename (nvim-ts-autotag).
 
 ---
 
-## Plugins (27)
+## Plugins (28)
 
-**UI/look:** catppuccin · lualine · bufferline · indent-blankline · which-key ·
-barbecue + nvim-navic (breadcrumb) · rainbow-delimiters · smear-cursor (animated cursor) · nvim-web-devicons
+**UI/look:** rose-pine · lualine · bufferline · indent-blankline · which-key ·
+barbecue + nvim-navic (breadcrumb) · rainbow-delimiters · smear-cursor (animated cursor) · mini.starter (start screen) · nvim-web-devicons
 **Editor:** telescope · nvim-tree · treesitter (+textobjects) · nvim-surround ·
 nvim-autopairs · nvim-ts-autotag
 **LSP/complete/format:** nvim-lspconfig · mason (+mason-lspconfig) · blink.cmp
 (+friendly-snippets) · conform
 **Git:** gitsigns · lazygit · plenary (shared dep)
-
-Want it even more vim-like? The remaining eye-candy lives in
-`cursor.lua` (smear), `ui.lua` (bufferline/indent guides/which-key),
-`navigation.lua` (breadcrumb) and `animate.lua` (rainbow) — delete a spec and
-run `:Lazy clean`.
 
 ---
 
