@@ -46,14 +46,53 @@ return {
     },
   },
 
-  -- Indent guides with scope highlight
+  -- Indent guides. Current-scope highlighting is handled by mini.indentscope
+  -- instead (below) — its animated line, this just draws the static guides.
   {
     "lukas-reineke/indent-blankline.nvim",
     main = "ibl",
     event = { "BufReadPost", "BufNewFile" },
     opts = {
       indent = { char = "│" },
-      scope = { enabled = true, show_start = false, show_end = false },
+      scope = { enabled = false },
+    },
+  },
+
+  -- Animated line marking the current indent scope as you move around.
+  {
+    "echasnovski/mini.indentscope",
+    version = false,
+    event = { "BufReadPost", "BufNewFile" },
+    config = function()
+      require("mini.indentscope").setup({
+        symbol = "│",
+        options = { try_as_border = true },
+        draw = {
+          delay = 60,
+          animation = require("mini.indentscope").gen_animation.quadratic({ duration = 40, unit = "step" }),
+        },
+      })
+      vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { fg = "#c4a7e7" }) -- rose-pine iris
+
+      -- No scope line in UI-ish / non-code buffers
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("UserIndentscopeDisable", { clear = true }),
+        pattern = { "help", "qf", "man", "lspinfo", "checkhealth", "git", "ministarter", "NvimTree" },
+        callback = function()
+          vim.b.miniindentscope_disable = true
+        end,
+      })
+    end,
+  },
+
+  -- Rounded floating prompts for vim.ui.input / vim.ui.select instead of
+  -- the plain command-line versions (matches the rounded LSP/telescope floats).
+  {
+    "stevearc/dressing.nvim",
+    event = "VeryLazy",
+    opts = {
+      input = { border = "rounded" },
+      select = { backend = { "telescope", "builtin" }, builtin = { border = "rounded" } },
     },
   },
 

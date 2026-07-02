@@ -10,7 +10,7 @@ return {
       trailing_stiffness = 0.45, -- tail follows promptly -> shorter, quicker trail
       trailing_exponent = 2, -- gentle taper
       distance_stop_animating = 0.5, -- finish a touch sooner
-      time_interval = 6, -- ms between frames; low = smooth (more redraws)
+      time_interval = 17, -- ms between frames (~60fps); higher = fewer redraws / lighter
 
       -- Smear across bigger movements (the "jump" feel you asked for)
       smear_between_buffers = true,

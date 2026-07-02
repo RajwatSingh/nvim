@@ -14,5 +14,16 @@ return {
       },
     })
     vim.cmd("colorscheme rose-pine")
+
+    -- Used to dim the gutter (line numbers, signs, folds) in inactive splits.
+    -- Rosé Pine's "muted" tone — see core/autocmds.lua.
+    local function set_gutter_dim()
+      vim.api.nvim_set_hl(0, "GutterDim", { fg = "#6e6a86" })
+    end
+    set_gutter_dim()
+    vim.api.nvim_create_autocmd("ColorScheme", {
+      group = vim.api.nvim_create_augroup("UserGutterDim", { clear = true }),
+      callback = set_gutter_dim,
+    })
   end,
 }

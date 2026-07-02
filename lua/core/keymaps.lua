@@ -38,11 +38,21 @@ map("n", "<leader>q", "<cmd>quit<cr>", { desc = "Quit window" })
 -- Terminal
 map("t", "<S-z>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 map("t", "<C-h>", [[<C-\><C-n><C-w>h]], { desc = "Terminal: go left" })
+map("n", "<leader>tn", "<cmd>terminal<cr>", { desc = "Open new terminal" })
+
+-- Close the current split without closing its buffer (works from terminal mode too)
+map({ "n", "t" }, "<C-w>q", function()
+  vim.cmd("close")
+end, { desc = "Close split (keep buffer)" })
 
 -- Diagnostics
 map("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line diagnostics" })
-map("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = "Next diagnostic" })
-map("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, { desc = "Prev diagnostic" })
+map("n", "]d", function()
+  vim.diagnostic.jump({ count = 1, float = true })
+end, { desc = "Next diagnostic" })
+map("n", "[d", function()
+  vim.diagnostic.jump({ count = -1, float = true })
+end, { desc = "Prev diagnostic" })
 
 -- Git quick commands. Output is shown as a notification; for interactive
 -- flows use lazygit (<leader>gg). Browse pickers live in plugins/telescope.lua.
@@ -59,15 +69,25 @@ local function git(args, ok_msg)
   end)
 end
 
-map("n", "<leader>ga", function() git({ "add", "-A" }, "Staged all changes") end, { desc = "Git stage all" })
+map("n", "<leader>ga", function()
+  git({ "add", "-A" }, "Staged all changes")
+end, { desc = "Git stage all" })
 map("n", "<leader>gc", function()
   vim.ui.input({ prompt = "Commit message: " }, function(msg)
-    if msg and msg ~= "" then git({ "commit", "-m", msg }) end
+    if msg and msg ~= "" then
+      git({ "commit", "-m", msg })
+    end
   end)
 end, { desc = "Git commit" })
-map("n", "<leader>gp", function() git({ "push" }, "Pushed") end, { desc = "Git push" })
-map("n", "<leader>gl", function() git({ "pull" }, "Pulled") end, { desc = "Git pull" })
-map("n", "<leader>gf", function() git({ "fetch", "--all", "--prune" }, "Fetched") end, { desc = "Git fetch (all)" })
+map("n", "<leader>gp", function()
+  git({ "push" }, "Pushed")
+end, { desc = "Git push" })
+map("n", "<leader>gl", function()
+  git({ "pull" }, "Pulled")
+end, { desc = "Git pull" })
+map("n", "<leader>gf", function()
+  git({ "fetch", "--all", "--prune" }, "Fetched")
+end, { desc = "Git fetch (all)" })
 
 -- ---------------------------------------------------------------------------
 -- Additional keybindings (purely additive — nothing above is changed).

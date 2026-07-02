@@ -10,17 +10,21 @@ return {
         "mason-org/mason.nvim",
         config = function()
           require("mason").setup()
-          -- Auto-install formatters (used by conform.nvim). No LSP servers here;
-          -- those are handled by mason-lspconfig below.
-          local reg = require("mason-registry")
-          reg.refresh(function()
-            for _, tool in ipairs({ "stylua", "prettierd" }) do
-              local ok, pkg = pcall(reg.get_package, tool)
-              if ok and not pkg:is_installed() then
-                pkg:install()
+        end,
+        init = function()
+          -- Formatters (stylua, prettierd, used by conform.nvim) used to
+          -- auto-install via a registry refresh + network call on every
+          -- startup. Install manually instead: :MasonInstallTools
+          vim.api.nvim_create_user_command("MasonInstallTools", function()
+            require("mason-registry").refresh(function()
+              for _, tool in ipairs({ "stylua", "prettierd" }) do
+                local ok, pkg = pcall(require("mason-registry").get_package, tool)
+                if ok and not pkg:is_installed() then
+                  pkg:install()
+                end
               end
-            end
-          end)
+            end)
+          end, { desc = "Install formatter tools via Mason (stylua, prettierd)" })
         end,
       },
       "mason-org/mason-lspconfig.nvim",

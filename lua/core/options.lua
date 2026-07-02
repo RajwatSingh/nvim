@@ -10,6 +10,11 @@ opt.number = true -- absolute number on the cursor line
 opt.relativenumber = true -- relative numbers everywhere else
 opt.termguicolors = true -- 24-bit colors
 opt.signcolumn = "yes" -- always show sign column so text doesn't jump
+opt.numberwidth = 4
+opt.foldcolumn = "1"
+-- Unified gutter: fold indicator, sign column, then the line number —
+-- one tidy column instead of three separate ones.
+opt.statuscolumn = "%C%s%=%{v:relnum ? v:relnum : v:lnum} "
 opt.cursorline = true -- highlight the current line
 opt.cursorlineopt = "number,line"
 opt.showmode = false -- mode is shown in the statusline instead
@@ -60,6 +65,6 @@ opt.completeopt = "menu,menuone,noselect"
 opt.foldmethod = "expr"
 opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 opt.foldtext = "v:lua.require'core.folding'.foldtext()"
-opt.fillchars:append({ fold = " " }) -- no trailing dots after the fold text
+opt.fillchars:append({ fold = " ", foldopen = "▾", foldclose = "▸", foldsep = " " }) -- no trailing dots after the fold text; matching foldtext's ▾
 opt.foldlevel = 99
 opt.foldlevelstart = 99
