@@ -131,3 +131,40 @@ map("n", "<leader>sr", [[:%s/\<<C-r><C-w>\>//g<Left><Left>]], { desc = "Replace 
 -- Leader-based terminals (additive alternative; your <S-a> map is untouched)
 map("n", "<leader>tv", "<cmd>vertical terminal<cr>", { desc = "Vertical terminal" })
 map("n", "<leader>th", "<cmd>split | terminal<cr>", { desc = "Horizontal terminal" })
+
+-- Markdown preview: render the current file in a floating window via glow.
+map("n", "<leader>mp", function()
+  local file = vim.api.nvim_buf_get_name(0)
+  if file == "" or vim.bo.filetype ~= "markdown" then
+    vim.notify("Not a markdown buffer", vim.log.levels.WARN, { title = "glow" })
+    return
+  end
+
+  local width = math.floor(vim.o.columns * 0.8)
+  local height = math.floor(vim.o.lines * 0.8)
+  local buf = vim.api.nvim_create_buf(false, true)
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = "editor",
+    width = width,
+    height = height,
+    row = math.floor((vim.o.lines - height) / 2),
+    col = math.floor((vim.o.columns - width) / 2),
+    style = "minimal",
+    border = "rounded",
+    title = " Markdown Preview ",
+    title_pos = "center",
+  })
+
+  local function close()
+    if vim.api.nvim_win_is_valid(win) then
+      vim.api.nvim_win_close(win, true)
+    end
+  end
+
+  vim.fn.jobstart({ "glow", "-p", file }, { term = true, on_exit = close })
+  vim.cmd("startinsert")
+
+  vim.keymap.set("t", "q", close, { buffer = buf })
+  vim.keymap.set("n", "q", close, { buffer = buf })
+  vim.keymap.set("t", "<Esc>", close, { buffer = buf })
+end, { desc = "Markdown preview (glow)" })

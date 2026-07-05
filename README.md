@@ -123,7 +123,7 @@ lua/plugins/            one file per concern
 | `<C-h/j/k/l>`                | Move to left / down / up / right window |
 | `<leader>sv` / `<leader>sh`  | Split window vertical / horizontal      |
 | `<leader>se`                 | Equalize split sizes                    |
-| `<leader>sx`                 | Close current split                     |
+| `<leader>sx` / `<C-w>q`      | Close current split (keeps buffer open) |
 | `<C-Up>` / `<C-Down>`        | Grow / shrink window height             |
 | `<C-Left>` / `<C-Right>`     | Shrink / grow window width              |
 | `]q` / `[q`                  | Next / previous quickfix item           |
