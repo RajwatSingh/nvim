@@ -17,9 +17,9 @@ return {
       smear_between_neighbor_lines = true,
       smear_insert_mode = false, -- keep typing crisp; only animate navigation
 
-      -- Matches rose-pine's "rose" accent so the trail fits the theme.
+      -- Matches catppuccin's "mauve" accent so the trail fits the theme.
       -- Set to "none" to use the terminal's cursor color instead.
-      cursor_color = "#ebbcba",
+      cursor_color = "#cba6f7",
     },
   },
 }

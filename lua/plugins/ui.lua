@@ -9,7 +9,7 @@ return {
     event = "VeryLazy",
     opts = {
       options = {
-        theme = "rose-pine",
+        theme = "catppuccin",
         globalstatus = true,
         component_separators = { left = "", right = "" },
         section_separators = { left = "", right = "" },
@@ -44,6 +44,17 @@ return {
         },
       },
     },
+    config = function(_, opts)
+      -- Catppuccin's tab highlights (module path moved between versions).
+      local ok, ctp = pcall(require, "catppuccin.special.bufferline")
+      if not ok then
+        ok, ctp = pcall(require, "catppuccin.groups.integrations.bufferline")
+      end
+      if ok then
+        opts.highlights = (ctp.get_theme or ctp.get)()
+      end
+      require("bufferline").setup(opts)
+    end,
   },
 
   -- Indent guides. Current-scope highlighting is handled by mini.indentscope
@@ -72,7 +83,7 @@ return {
           animation = require("mini.indentscope").gen_animation.quadratic({ duration = 40, unit = "step" }),
         },
       })
-      vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { fg = "#c4a7e7" }) -- rose-pine iris
+      vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { fg = "#cba6f7" }) -- catppuccin mauve
 
       -- No scope line in UI-ish / non-code buffers
       vim.api.nvim_create_autocmd("FileType", {
@@ -121,7 +132,13 @@ return {
       },
     },
     keys = {
-      { "<leader>?", function() require("which-key").show({ global = false }) end, desc = "Buffer keymaps" },
+      {
+        "<leader>?",
+        function()
+          require("which-key").show({ global = false })
+        end,
+        desc = "Buffer keymaps",
+      },
     },
   },
 }

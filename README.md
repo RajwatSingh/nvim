@@ -2,6 +2,7 @@
 
 -> A lightweight Neovim setup.
 -> IDE features: LSP, fuzzy finding, treesitter, git, and format-on-save.
+-> Themed with **Catppuccin Mocha** (transparent background, mauve/gold accents).
 
 - **Leader key:** `Space`
 - **Discoverability:** press `<leader>` and pause — **which-key** pops up the menu.
@@ -78,7 +79,7 @@ lua/core/
 lua/plugins/            one file per concern
   lsp.lua  completion.lua  telescope.lua  git.lua  explorer.lua
   treesitter.lua  coding.lua  formatting.lua  editing.lua  ui.lua
-  navigation.lua  colorscheme.lua  cursor.lua  animate.lua  dashboard.lua
+  colorscheme.lua  cursor.lua  animate.lua  dashboard.lua
 ```
 
 ---
@@ -306,10 +307,12 @@ shows its first line plus a compact summary — e.g. `team_strength = { ⋯ 30 e
 
 ## Plugins (28)
 
-**UI/look:** rose-pine · lualine · bufferline · indent-blankline · which-key ·
-barbecue + nvim-navic (breadcrumb) · rainbow-delimiters · smear-cursor (animated cursor) · mini.starter (start screen) · nvim-web-devicons
-**Editor:** telescope · nvim-tree · treesitter (+textobjects) · nvim-surround ·
-nvim-autopairs · nvim-ts-autotag
+**UI/look:** catppuccin (mocha) · lualine · bufferline · indent-blankline ·
+mini.indentscope (animated scope line) · which-key · rainbow-delimiters ·
+smear-cursor (animated cursor) · mini.starter (start screen) · dressing (rounded
+input/select floats) · nvim-web-devicons
+**Editor:** telescope (+fzf-native) · nvim-tree · treesitter (+textobjects) ·
+nvim-surround · nvim-autopairs · nvim-ts-autotag
 **LSP/complete/format:** nvim-lspconfig · mason (+mason-lspconfig) · blink.cmp
 (+friendly-snippets) · conform
 **Git:** gitsigns · lazygit · plenary (shared dep)

@@ -18,7 +18,7 @@ require("lazy").setup({
     { import = "plugins" },
   },
   defaults = { lazy = true }, -- lazy-load by default; keeps startup fast
-  install = { colorscheme = { "rose-pine" } },
+  install = { colorscheme = { "catppuccin" } },
   checker = { enabled = false, notify = false }, -- no startup update polling; run :Lazy check manually
   change_detection = { notify = false },
   performance = {
@@ -31,6 +31,8 @@ require("lazy").setup({
         "tutor",
         "zipPlugin",
         "netrwPlugin",
+        "rplugin",
+        "spellfile",
       },
     },
   },
