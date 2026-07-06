@@ -17,7 +17,7 @@ return {
           -- startup. Install manually instead: :MasonInstallTools
           vim.api.nvim_create_user_command("MasonInstallTools", function()
             require("mason-registry").refresh(function()
-              for _, tool in ipairs({ "stylua", "prettierd" }) do
+              for _, tool in ipairs({ "stylua", "prettierd", "gofumpt", "goimports" }) do
                 local ok, pkg = pcall(require("mason-registry").get_package, tool)
                 if ok and not pkg:is_installed() then
                   pkg:install()
@@ -62,6 +62,16 @@ return {
             diagnostics = { globals = { "vim", "Snacks" } },
             completion = { callSnippet = "Replace" },
             telemetry = { enable = false },
+          },
+        },
+      })
+
+      vim.lsp.config("gopls", {
+        settings = {
+          gopls = {
+            gofumpt = true,
+            staticcheck = true,
+            analyses = { unusedparams = true },
           },
         },
       })
@@ -114,6 +124,7 @@ return {
           "lua_ls",
           "pyright",
           "ruff",
+          "gopls",
           "ts_ls",
           "html",
           "cssls",
