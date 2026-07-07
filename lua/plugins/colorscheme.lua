@@ -1,5 +1,6 @@
--- Catppuccin Mocha: deep charcoal base, royal mauve/lavender accents,
--- gold highlights. Transparent so the terminal background shows through.
+-- Grape Soda: deep grape-purple base fading to lavender text, with a pop of
+-- lime green. Built on Catppuccin Mocha, recolored via color_overrides so all
+-- integrations keep working. Transparent so the terminal background shows through.
 return {
   "catppuccin/nvim",
   name = "catppuccin",
@@ -9,6 +10,37 @@ return {
     require("catppuccin").setup({
       flavour = "mocha", -- "latte" | "frappe" | "macchiato" | "mocha"
       transparent_background = true, -- let the terminal background show through
+      -- Grape Soda palette — same color roles Catppuccin uses, retinted.
+      color_overrides = {
+        mocha = {
+          rosewater = "#e0c8f0",
+          flamingo = "#e0a3d0",
+          pink = "#e8a0e0",
+          mauve = "#b28df0", -- grape
+          red = "#f26d9c",
+          maroon = "#f487ab",
+          peach = "#f0a95e",
+          yellow = "#f2d06b",
+          green = "#b8f24d", -- the lime green pop
+          teal = "#8fe0c0",
+          sky = "#a3edd0",
+          sapphire = "#93c9f0",
+          blue = "#9d7ae8", -- grape-blue
+          lavender = "#c4b0f0",
+          text = "#e4d9f7",
+          subtext1 = "#c3b3e6",
+          subtext0 = "#a99cd0",
+          overlay2 = "#8b7db0",
+          overlay1 = "#726690",
+          overlay0 = "#5b5175",
+          surface2 = "#43335c",
+          surface1 = "#332548",
+          surface0 = "#241934",
+          base = "#181022",
+          mantle = "#130d1c",
+          crust = "#0e0a15",
+        },
+      },
       styles = {
         comments = { "italic" },
         keywords = { "bold" },
@@ -49,9 +81,9 @@ return {
     vim.cmd("colorscheme catppuccin")
 
     -- Used to dim the gutter (line numbers, signs, folds) in inactive splits.
-    -- Catppuccin's "overlay0" tone — see core/autocmds.lua.
+    -- Grape Soda's "overlay0" tone — see core/autocmds.lua.
     local function set_gutter_dim()
-      vim.api.nvim_set_hl(0, "GutterDim", { fg = "#6c7086" })
+      vim.api.nvim_set_hl(0, "GutterDim", { fg = "#5b5175" })
     end
     set_gutter_dim()
     vim.api.nvim_create_autocmd("ColorScheme", {
