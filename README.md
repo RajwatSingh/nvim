@@ -1,6 +1,6 @@
 # Neovim Config
 
-A lightweight Neovim setup — LSP, fuzzy finding, treesitter, git, and format-on-save, themed with **Catppuccin Mocha**.
+A lightweight Neovim setup — LSP, fuzzy finding, treesitter, git, quick file marks (harpoon), and format-on-save, themed with **Catppuccin Mocha**.
 
 - **Leader key:** `Space`
 - **Discoverability:** press `<leader>` and pause — **which-key** shows the menu. Or `<leader>fk` to fuzzy-search every keymap.
@@ -132,6 +132,30 @@ winget install --id Microsoft.VisualStudio.2022.BuildTools   # C compiler / make
 | `<leader>fc`                     | Colorschemes                    |
 | `<C-j>` / `<C-k>` _(in picker)_  | Next / previous result          |
 | `<Esc>` _(in picker)_            | Close                           |
+
+### Quick file marks — Harpoon
+
+Harpoon lets you pin a handful of files you're actively working in and jump
+between them instantly — no fuzzy-searching, no buffer cycling. It layers on top
+of Telescope: `<leader>fH` opens your marks in a Telescope picker (with preview
+and fuzzy filtering), while `<leader>H` gives you the fast native quick menu.
+
+| Key                       | Action                              |
+| ------------------------- | ----------------------------------- |
+| `<leader>a`               | Add the current file to the list    |
+| `<leader>H`               | Toggle the harpoon quick menu       |
+| `<leader>fH`              | Browse marks in Telescope (preview) |
+| `<leader>1` … `<leader>4` | Jump to mark 1–4                    |
+| `<C-n>` / `<C-p>`         | Cycle to next / previous mark       |
+
+**Quick menu (`<leader>H`):** it's a normal editable buffer — reorder marks by
+moving lines, delete a line to drop a mark, `<CR>` to open the one under the
+cursor, `q` or `<Esc>` to close. Whatever you leave is your new list.
+
+**Telescope vs. quick menu:** the quick menu is for editing the list and fast
+number jumps; `<leader>fH` is for when you have many marks and want to fuzzy-find
+or preview before opening. Marks persist per project (cwd), so each repo keeps
+its own set.
 
 ### File explorer — nvim-tree
 
