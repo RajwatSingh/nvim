@@ -59,6 +59,7 @@ opt.mouse = "a"
 opt.clipboard = "unnamedplus" -- share with system clipboard
 opt.updatetime = 200 -- faster CursorHold / diagnostics / git signs
 opt.timeoutlen = 400 -- quicker which-key popup
+opt.lazyredraw = true -- don't redraw mid-macro/script; repaint once at the end (huge win for big macros)
 opt.completeopt = "menu,menuone,noselect"
 
 -- Folding (treesitter-based, but open by default)
