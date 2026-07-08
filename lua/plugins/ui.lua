@@ -9,7 +9,7 @@ return {
     event = "VeryLazy",
     opts = {
       options = {
-        theme = "catppuccin",
+        theme = "catppuccin-mocha",
         globalstatus = true,
         component_separators = { left = "", right = "" },
         section_separators = { left = "", right = "" },
