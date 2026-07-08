@@ -35,7 +35,7 @@ return {
       vim.diagnostic.config({
         severity_sort = true,
         float = { border = "rounded", source = true },
-        virtual_text = { prefix = "●", spacing = 4 },
+        virtual_text = false, -- no inline end-of-line messages; gutter signs + float only
         signs = {
           text = {
             [vim.diagnostic.severity.ERROR] = "",

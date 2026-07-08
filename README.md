@@ -11,16 +11,16 @@ A lightweight Neovim setup — LSP, fuzzy finding, treesitter, git, and format-o
 
 ### Requirements
 
-| Tool                | Why                        |
-| ------------------- | -------------------------- |
-| Neovim ≥ 0.11       | core                       |
-| C compiler + `make` | compile treesitter parsers |
-| `git`               | plugins, gitsigns, lazygit |
-| `node` / `npm`      | some LSP servers           |
-| `ripgrep`           | Telescope live-grep        |
-| `lazygit`           | git TUI (`<leader>gg`)     |
-| `glow`              | markdown preview (`<leader>mp`) |
-| `fd` _(optional)_   | faster file finding        |
+| Tool                | Why                                |
+| ------------------- | ---------------------------------- |
+| Neovim ≥ 0.11       | core                               |
+| C compiler + `make` | compile treesitter parsers         |
+| `git`               | plugins, gitsigns, lazygit         |
+| `node` / `npm`      | some LSP servers                   |
+| `ripgrep`           | Telescope live-grep                |
+| `lazygit`           | git TUI (`<leader>gg`)             |
+| `glow`              | markdown preview (`<leader>mp`)    |
+| `fd` _(optional)_   | faster file finding                |
 | A Nerd Font         | icons (select it in your terminal) |
 
 LSP servers & formatters install themselves via **mason** on first launch
@@ -71,23 +71,23 @@ winget install --id Microsoft.VisualStudio.2022.BuildTools   # C compiler / make
 
 ### General / editing
 
-| Key                    | Action                                    |
-| ---------------------- | ----------------------------------------- |
-| `<Esc>`                | Clear search highlight                    |
-| `<C-d>` / `<C-u>`      | Half-page down / up (re-centered)         |
-| `n` / `N`              | Next / prev search result (re-centered)   |
-| `J`                    | Join line below (cursor stays put)        |
-| `J` / `K` _(visual)_   | Move selected lines down / up             |
-| `<` / `>` _(visual)_   | Indent left / right, keep selection       |
-| `<leader>w` / `<C-s>`  | Save file (`<C-s>` works in any mode)     |
-| `<leader>q`            | Quit window                               |
-| `<leader>fn`           | New empty file                            |
-| `<leader>p` _(visual)_ | Paste over selection, keep yank register  |
-| `<leader>d`            | Delete without yanking                    |
-| `<leader>sr`           | Replace the word under the cursor in file |
+| Key                    | Action                                            |
+| ---------------------- | ------------------------------------------------- |
+| `<Esc>`                | Clear search highlight                            |
+| `<C-d>` / `<C-u>`      | Half-page down / up (re-centered)                 |
+| `n` / `N`              | Next / prev search result (re-centered)           |
+| `J`                    | Join line below (cursor stays put)                |
+| `J` / `K` _(visual)_   | Move selected lines down / up                     |
+| `<` / `>` _(visual)_   | Indent left / right, keep selection               |
+| `<leader>w` / `<C-s>`  | Save file (`<C-s>` works in any mode)             |
+| `<leader>q`            | Quit window                                       |
+| `<leader>fn`           | New empty file                                    |
+| `<leader>p` _(visual)_ | Paste over selection, keep yank register          |
+| `<leader>d`            | Delete without yanking                            |
+| `<leader>sr`           | Replace the word under the cursor in file         |
 | `<leader>mp`           | Markdown preview (glow float; `q`/`Esc` to close) |
-| `<leader>L`            | Open plugin manager (Lazy)                |
-| `<leader>?`            | Show keymaps for current buffer           |
+| `<leader>L`            | Open plugin manager (Lazy)                        |
+| `<leader>?`            | Show keymaps for current buffer                   |
 
 ### Buffers & windows
 

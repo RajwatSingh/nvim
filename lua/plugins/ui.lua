@@ -26,84 +26,15 @@ return {
     },
   },
 
-  -- Bufferline (open files as tabs) — slanted, like your old setup
-  {
-    "akinsho/bufferline.nvim",
-    event = "VeryLazy",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    opts = {
-      options = {
-        separator_style = "slant",
-        always_show_bufferline = false,
-        show_buffer_close_icons = true,
-        show_close_icon = false,
-        diagnostics = "nvim_lsp",
-        indicator = { style = "underline" },
-        offsets = {
-          { filetype = "NvimTree", text = "Explorer", highlight = "Directory", text_align = "left" },
-        },
-      },
-    },
-    config = function(_, opts)
-      -- Catppuccin's tab highlights (module path moved between versions).
-      local ok, ctp = pcall(require, "catppuccin.special.bufferline")
-      if not ok then
-        ok, ctp = pcall(require, "catppuccin.groups.integrations.bufferline")
-      end
-      if ok then
-        opts.highlights = (ctp.get_theme or ctp.get)()
-      end
-      require("bufferline").setup(opts)
-    end,
-  },
-
-  -- Indent guides. Current-scope highlighting is handled by mini.indentscope
-  -- instead (below) — its animated line, this just draws the static guides.
+  -- Indent guides + a static current-scope line. The scope highlight snaps
+  -- instantly (no animation) and is themed by catppuccin's IblScope group.
   {
     "lukas-reineke/indent-blankline.nvim",
     main = "ibl",
     event = { "BufReadPost", "BufNewFile" },
     opts = {
       indent = { char = "│" },
-      scope = { enabled = false },
-    },
-  },
-
-  -- Animated line marking the current indent scope as you move around.
-  {
-    "echasnovski/mini.indentscope",
-    version = false,
-    event = { "BufReadPost", "BufNewFile" },
-    config = function()
-      require("mini.indentscope").setup({
-        symbol = "│",
-        options = { try_as_border = true },
-        draw = {
-          delay = 60,
-          animation = require("mini.indentscope").gen_animation.quadratic({ duration = 40, unit = "step" }),
-        },
-      })
-      vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { fg = "#cba6f7" }) -- catppuccin mauve
-
-      -- No scope line in UI-ish / non-code buffers
-      vim.api.nvim_create_autocmd("FileType", {
-        group = vim.api.nvim_create_augroup("UserIndentscopeDisable", { clear = true }),
-        pattern = { "help", "qf", "man", "lspinfo", "checkhealth", "git", "ministarter", "NvimTree" },
-        callback = function()
-          vim.b.miniindentscope_disable = true
-        end,
-      })
-    end,
-  },
-
-  -- Rounded floating prompts for vim.ui.input / vim.ui.select instead of
-  -- the plain command-line versions (matches the rounded LSP/telescope floats).
-  {
-    "stevearc/dressing.nvim",
-    event = "VeryLazy",
-    opts = {
-      input = { border = "rounded" },
-      select = { backend = { "telescope", "builtin" }, builtin = { border = "rounded" } },
+      scope = { enabled = true, show_start = false, show_end = false },
     },
   },
 

@@ -1,14 +1,6 @@
 -- Small quality-of-life autocommands.
 local augroup = vim.api.nvim_create_augroup("UserConfig", { clear = true })
 
--- Briefly highlight yanked text
-vim.api.nvim_create_autocmd("TextYankPost", {
-  group = augroup,
-  callback = function()
-    vim.highlight.on_yank({ timeout = 200 })
-  end,
-})
-
 -- Return to last edit position when reopening a file
 vim.api.nvim_create_autocmd("BufReadPost", {
   group = augroup,
@@ -38,27 +30,5 @@ vim.api.nvim_create_autocmd("TermOpen", {
     vim.opt_local.number = false
     vim.opt_local.relativenumber = false
     vim.opt_local.signcolumn = "no"
-    vim.opt_local.statuscolumn = ""
-  end,
-})
-
--- Only show cursorline + full-brightness gutter in the focused split; other
--- splits keep their content but the gutter dims, so it's obvious at a
--- glance which window is active.
-local function set_win_focus(active)
-  vim.wo.cursorline = active
-  vim.wo.winhighlight = active and "" or "LineNr:GutterDim,CursorLineNr:GutterDim,SignColumn:GutterDim,FoldColumn:GutterDim"
-end
-
-vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter" }, {
-  group = augroup,
-  callback = function()
-    set_win_focus(true)
-  end,
-})
-vim.api.nvim_create_autocmd("WinLeave", {
-  group = augroup,
-  callback = function()
-    set_win_focus(false)
   end,
 })

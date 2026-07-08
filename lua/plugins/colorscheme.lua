@@ -60,7 +60,6 @@ return {
           },
         },
         nvimtree = true,
-        rainbow_delimiters = true,
         telescope = { enabled = true },
         treesitter = true,
         which_key = true,
@@ -79,16 +78,5 @@ return {
       end,
     })
     vim.cmd("colorscheme catppuccin")
-
-    -- Used to dim the gutter (line numbers, signs, folds) in inactive splits.
-    -- Grape Soda's "overlay0" tone — see core/autocmds.lua.
-    local function set_gutter_dim()
-      vim.api.nvim_set_hl(0, "GutterDim", { fg = "#5b5175" })
-    end
-    set_gutter_dim()
-    vim.api.nvim_create_autocmd("ColorScheme", {
-      group = vim.api.nvim_create_augroup("UserGutterDim", { clear = true }),
-      callback = set_gutter_dim,
-    })
   end,
 }

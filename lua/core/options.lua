@@ -11,12 +11,10 @@ opt.relativenumber = true -- relative numbers everywhere else
 opt.termguicolors = true -- 24-bit colors
 opt.signcolumn = "yes" -- always show sign column so text doesn't jump
 opt.numberwidth = 4
-opt.foldcolumn = "1"
--- Unified gutter: fold indicator, sign column, then the line number —
--- one tidy column instead of three separate ones.
-opt.statuscolumn = "%C%s%=%{v:relnum ? v:relnum : v:lnum} "
-opt.cursorline = true -- highlight the current line
-opt.cursorlineopt = "number,line"
+-- Gutter is rendered by Neovim's native fast path (sign column + line number).
+-- No custom statuscolumn expression and no foldcolumn: both re-evaluate per line
+-- per redraw, and folds are open by default (foldlevel=99) so the fold column
+-- was mostly empty anyway.
 opt.showmode = false -- mode is shown in the statusline instead
 opt.shortmess:append("I") -- skip the intro/start screen; open straight to an empty buffer
 opt.laststatus = 3 -- single global statusline
@@ -59,7 +57,9 @@ opt.mouse = "a"
 opt.clipboard = "unnamedplus" -- share with system clipboard
 opt.updatetime = 200 -- faster CursorHold / diagnostics / git signs
 opt.timeoutlen = 400 -- quicker which-key popup
-opt.lazyredraw = true -- don't redraw mid-macro/script; repaint once at the end (huge win for big macros)
+-- NOTE: lazyredraw intentionally NOT set. On modern Neovim with an async
+-- statusline/UI it causes visible flicker and stale repaints; the old
+-- macro-speedup benefit is negligible now.
 opt.completeopt = "menu,menuone,noselect"
 
 -- Folding (treesitter-based, but open by default)

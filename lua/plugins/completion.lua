@@ -14,9 +14,9 @@ return {
       },
       appearance = { nerd_font_variant = "mono" },
       completion = {
-        documentation = { auto_show = true, auto_show_delay_ms = 200 },
+        documentation = { auto_show = false }, -- open docs manually; no surprise floats
         menu = { border = "rounded" },
-        ghost_text = { enabled = true },
+        ghost_text = { enabled = false }, -- no gray inline preview as you type
       },
       signature = { enabled = true, window = { border = "rounded" } },
       sources = {
