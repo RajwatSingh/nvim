@@ -46,7 +46,9 @@ map({ "n", "t" }, "<C-w>q", function()
 end, { desc = "Close split (keep buffer)" })
 
 -- Diagnostics
-map("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line diagnostics" })
+map("n", "<leader>cd", function()
+  vim.diagnostic.open_float()
+end, { desc = "Line diagnostics" })
 map("n", "]d", function()
   vim.diagnostic.jump({ count = 1, float = true })
 end, { desc = "Next diagnostic" })

@@ -64,7 +64,7 @@ opt.completeopt = "menu,menuone,noselect"
 
 -- Folding (treesitter-based, but open by default)
 opt.foldmethod = "expr"
-opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+opt.foldexpr = "v:lua.require'core.folding'.foldexpr()" -- lazy wrapper; avoids loading vim.treesitter at startup
 opt.foldtext = "v:lua.require'core.folding'.foldtext()"
 opt.fillchars:append({ fold = " ", foldopen = "▾", foldclose = "▸", foldsep = " " }) -- no trailing dots after the fold text; matching foldtext's ▾
 opt.foldlevel = 99
