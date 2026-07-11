@@ -19,8 +19,7 @@ opt.showmode = false -- mode is shown in the statusline instead
 opt.shortmess:append("I") -- skip the intro/start screen; open straight to an empty buffer
 opt.laststatus = 3 -- single global statusline
 opt.pumheight = 10 -- limit completion popup height
-opt.pumblend = 10 -- subtle transparency on the popup menu
-opt.winblend = 0 -- keep floats crisp on a transparent terminal bg
+opt.cursorline = true -- subtle current-line tint (highlight set in colorscheme.lua)
 opt.fillchars:append({ eob = " " }) -- hide the ~ on empty lines
 opt.wrap = false
 

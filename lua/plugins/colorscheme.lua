@@ -51,7 +51,6 @@ return {
         gitsigns = true,
         indent_blankline = { enabled = true },
         mason = true,
-        mini = { enabled = true },
         native_lsp = {
           enabled = true,
           underlines = {
@@ -67,6 +66,7 @@ return {
       -- Royal touches: gold cursor line number, mauve floats/borders.
       custom_highlights = function(c)
         return {
+          CursorLine = { bg = c.surface0 }, -- subtle tint one step above the transparent base
           CursorLineNr = { fg = c.yellow, style = { "bold" } }, -- gold current line
           FloatBorder = { fg = c.mauve },
           TelescopeBorder = { fg = c.mauve },

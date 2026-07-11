@@ -13,7 +13,7 @@ return {
         globalstatus = true,
         component_separators = { left = "", right = "" },
         section_separators = { left = "", right = "" },
-        disabled_filetypes = { statusline = { "ministarter", "starter", "NvimTree" } },
+        disabled_filetypes = { statusline = { "NvimTree" } },
       },
       sections = {
         lualine_a = { "mode" },

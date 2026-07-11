@@ -102,8 +102,35 @@ map({ "n", "i", "v" }, "<C-s>", "<cmd>write<cr><Esc>", { desc = "Save file" })
 map("n", "<leader>bd", "<cmd>bdelete<cr>", { desc = "Delete buffer" })
 map("n", "<leader>bD", "<cmd>bdelete!<cr>", { desc = "Delete buffer (force)" })
 
--- New empty file
-map("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New file" })
+-- Create a new file (prompts for a path; missing parent folders are created)
+map("n", "<leader>fn", function()
+  local dir = vim.fn.expand("%:p:h")
+  if dir == "" or vim.bo.buftype ~= "" then
+    dir = vim.uv.cwd()
+  end
+  vim.ui.input({ prompt = "New file: ", default = dir .. "/", completion = "file" }, function(path)
+    if not path or path == "" or path:sub(-1) == "/" then
+      return
+    end
+    vim.fn.mkdir(vim.fn.fnamemodify(path, ":h"), "p")
+    vim.cmd.edit(vim.fn.fnameescape(path))
+  end)
+end, { desc = "New file" })
+
+-- Create a new folder
+map("n", "<leader>fN", function()
+  local dir = vim.fn.expand("%:p:h")
+  if dir == "" or vim.bo.buftype ~= "" then
+    dir = vim.uv.cwd()
+  end
+  vim.ui.input({ prompt = "New folder: ", default = dir .. "/", completion = "dir" }, function(path)
+    if not path or path == "" then
+      return
+    end
+    vim.fn.mkdir(path, "p")
+    vim.notify("Created " .. path, vim.log.levels.INFO)
+  end)
+end, { desc = "New folder" })
 
 -- Window splits
 map("n", "<leader>sv", "<C-w>v", { desc = "Split vertical" })

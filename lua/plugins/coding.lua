@@ -12,7 +12,6 @@ return {
       "typescriptreact",
       "svelte",
       "vue",
-      "markdown",
     },
     opts = {},
   },
