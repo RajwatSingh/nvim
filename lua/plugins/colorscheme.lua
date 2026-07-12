@@ -67,6 +67,7 @@ return {
       custom_highlights = function(c)
         return {
           CursorLine = { bg = c.surface0 }, -- subtle tint one step above the transparent base
+          LineNr = { fg = c.overlay1 }, -- brighter than the default surface1, readable on the transparent bg
           CursorLineNr = { fg = c.yellow, style = { "bold" } }, -- gold current line
           FloatBorder = { fg = c.mauve },
           TelescopeBorder = { fg = c.mauve },
