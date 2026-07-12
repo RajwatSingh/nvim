@@ -216,10 +216,17 @@ Jumps: `]f` / `[f` function start · `]F` function end · `]c` / `[c` class.
 
 | Key             | Action                       |
 | --------------- | ---------------------------- |
-| `ysiw)`         | Surround word with `()`      |
+| `ysiw(`         | Surround word with `()`      |
+| `ys2(`          | Surround 2 words with `()`   |
+| `ys3(`          | Surround 3 words with `()`   |
+| `ysl(`          | Surround whole line with `()`|
 | `cs"'`          | Change surrounding `"` → `'` |
 | `ds(`           | Delete surrounding `()`      |
 | `S)` _(visual)_ | Surround selection with `()` |
+
+Any pair works in place of `(` — e.g. `ys2"`, `ysl{`. Opening brackets
+(`(`, `[`, `{`) are configured to add **no** padding spaces, so `ysiw(`
+gives `(word)`, same as `ysiw)`.
 
 ### Git
 
