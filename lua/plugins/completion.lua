@@ -12,7 +12,7 @@ return {
         ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
         ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
       },
-      appearance = { nerd_font_variant = "mono" },
+      appearance = { nerd_font_variant = "normal" },
       completion = {
         documentation = { auto_show = false }, -- open docs manually; no surprise floats
         menu = { border = "rounded" },
