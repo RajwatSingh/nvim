@@ -1,51 +1,55 @@
--- Grape Soda: deep grape-purple base fading to lavender text, with a pop of
--- lime green. Built on Catppuccin Mocha, recolored via color_overrides so all
--- integrations keep working. Transparent so the terminal background shows through.
--- Mirrored in ~/.config/ghostty/themes/GrapeSoda and the [palettes.grape_soda]
--- block of ~/.config/ghostty/starship.toml — keep the three in sync.
+-- Neon Tide: deep midnight-navy base with vibrant azure, mint-teal, coral and
+-- gold accents, plus an electric-cyan pop. Built on Catppuccin Mocha, recolored
+-- via color_overrides so all integrations keep working. Transparent so the
+-- terminal background shows through.
+-- Mirrored in ~/.config/ghostty/themes/NeonTide and the [palettes.neon_tide]
+-- block of ~/.config/starship.toml — keep the three in sync.
 return {
   "catppuccin/nvim",
   name = "catppuccin",
   priority = 1000, -- load before everything else
   lazy = false, -- override defaults.lazy so the colorscheme applies at startup
   config = function()
-    -- Reserved "pop" lime. Deliberately not part of the palette: `green` is worn
-    -- by every string in the file, so it can't also carry emphasis. This is kept
-    -- for the few things that should grab the eye (live search, matching paren).
-    local pop = "#c9ff66"
+    -- Reserved "pop" electric cyan. Deliberately not part of the palette: the
+    -- teals/blues are worn by everyday syntax, so they can't also carry
+    -- emphasis. This is kept for the few things that should grab the eye
+    -- (live search, matching paren).
+    local pop = "#3bfee7"
 
     require("catppuccin").setup({
       flavour = "mocha", -- "latte" | "frappe" | "macchiato" | "mocha"
       transparent_background = true, -- let the terminal background show through
-      -- Grape Soda palette — same color roles Catppuccin uses, retinted.
+      -- Neon Tide palette — same color roles Catppuccin uses, retinted.
+      -- Engineered in OKLCH: accents sit at uniform perceived lightness with
+      -- max in-gamut chroma, hues spaced >=42deg, every accent >=6:1 on base.
       color_overrides = {
         mocha = {
-          rosewater = "#e0c8f0",
-          flamingo = "#e0a3d0",
-          pink = "#e8a0e0",
-          mauve = "#b28df0", -- grape
-          red = "#f26d9c",
-          maroon = "#f487ab",
-          peach = "#f0a95e",
-          yellow = "#f2d06b",
-          green = "#a8dd48", -- strings/diff-add; calmer than the reserved pop lime (#c9ff66)
-          teal = "#8fe0c0",
-          sky = "#a3edd0",
-          sapphire = "#93c9f0",
-          blue = "#9d7ae8", -- grape-blue
-          lavender = "#c4b0f0",
-          text = "#e4d9f7",
-          subtext1 = "#c3b3e6",
-          subtext0 = "#a99cd0",
-          overlay2 = "#8b7db0",
-          overlay1 = "#726690",
-          overlay0 = "#5b5175",
-          surface2 = "#43335c",
-          surface1 = "#332548",
-          surface0 = "#241934",
-          base = "#181022",
-          mantle = "#130d1c",
-          crust = "#0e0a15",
+          rosewater = "#f3c0b7",
+          flamingo = "#f5a3b5",
+          pink = "#fa8cd7",
+          mauve = "#b888fa", -- vivid violet (keywords)
+          red = "#f9667a", -- coral
+          maroon = "#f8869a",
+          peach = "#fe9557",
+          yellow = "#f2ce59", -- warm gold (types, focus)
+          green = "#7cd06a", -- strings/diff-add; calmer than the pop cyan
+          teal = "#11d6a4", -- mint-teal
+          sky = "#11d6e7",
+          sapphire = "#02c2fa",
+          blue = "#6aaafe", -- vibrant azure (functions)
+          lavender = "#aab4fe",
+          text = "#d5dde7",
+          subtext1 = "#adb7c2",
+          subtext0 = "#95a1af",
+          overlay2 = "#7e8b99",
+          overlay1 = "#677583",
+          overlay0 = "#4f5c6a",
+          surface2 = "#323e4c",
+          surface1 = "#242f3b",
+          surface0 = "#19232d",
+          base = "#0c151d",
+          mantle = "#080f17",
+          crust = "#050b11",
         },
       },
       styles = {
@@ -74,16 +78,17 @@ return {
         treesitter = true,
         which_key = true,
       },
-      -- Three accent tiers: grape carries structure, gold marks focus, and `pop`
-      -- lime is held back for the handful of things that should grab the eye.
+      -- Three accent tiers: azure/violet carry structure, gold marks focus, and
+      -- `pop` cyan is held back for the handful of things that should grab the eye.
       custom_highlights = function(c)
         return {
           CursorLine = { bg = c.surface0 }, -- subtle tint one step above the transparent base
           LineNr = { fg = c.overlay1 }, -- brighter than the default surface1, readable on the transparent bg
           CursorLineNr = { fg = c.yellow, style = { "bold" } }, -- gold current line
-          -- Catppuccin maps Comment to overlay0, which is only 2.6:1 on this base.
-          -- Overridden by hex rather than by lifting overlay0, which LineNr depends on.
-          Comment = { fg = "#7d6fa0", style = { "italic" } },
+          -- Catppuccin maps Comment to overlay0, which is only 2.7:1 on this
+          -- base. This hex is 4.7:1 (WCAG AA). Overridden directly rather than
+          -- by lifting overlay0, which LineNr depends on.
+          Comment = { fg = "#768297", style = { "italic" } },
           WinSeparator = { fg = c.surface2 },
 
           -- The pop tier. Search lands on the current match only, so the other
@@ -97,7 +102,7 @@ return {
           -- The editor stays transparent; popups get a backing so they don't
           -- read as muddy against the blurred desktop behind Ghostty.
           NormalFloat = { bg = c.mantle },
-          FloatBorder = { fg = c.mauve, bg = c.mantle },
+          FloatBorder = { fg = c.blue, bg = c.mantle },
 
           -- Borderless Telescope: each border fg matches its own bg, so the
           -- panes read as flat layers instead of boxes.
@@ -106,14 +111,14 @@ return {
           TelescopeResultsTitle = { fg = c.mantle, bg = c.mantle },
           TelescopePromptNormal = { bg = c.surface0 },
           TelescopePromptBorder = { fg = c.surface0, bg = c.surface0 },
-          TelescopePromptTitle = { fg = c.base, bg = c.mauve, style = { "bold" } },
-          TelescopePreviewTitle = { fg = c.base, bg = c.green, style = { "bold" } },
+          TelescopePromptTitle = { fg = c.base, bg = c.blue, style = { "bold" } },
+          TelescopePreviewTitle = { fg = c.base, bg = c.teal, style = { "bold" } },
           TelescopeSelection = { bg = c.surface1, style = { "bold" } },
           TelescopeMatching = { fg = c.yellow, style = { "bold" } },
-          TelescopePromptPrefix = { fg = c.green },
-          TelescopeSelectionCaret = { fg = c.green },
+          TelescopePromptPrefix = { fg = c.teal },
+          TelescopeSelectionCaret = { fg = c.teal },
 
-          IblScope = { fg = c.mauve },
+          IblScope = { fg = c.blue },
         }
       end,
     })
