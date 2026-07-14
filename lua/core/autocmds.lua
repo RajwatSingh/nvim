@@ -23,6 +23,18 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- Go is formatted with hard tabs (gofmt), so don't expand them there.
+vim.api.nvim_create_autocmd("FileType", {
+  group = augroup,
+  pattern = { "go", "gomod", "gowork", "gotmpl" },
+  callback = function(args)
+    vim.bo[args.buf].expandtab = false
+    vim.bo[args.buf].shiftwidth = 4
+    vim.bo[args.buf].tabstop = 4
+    vim.bo[args.buf].softtabstop = 4
+  end,
+})
+
 -- Enter insert mode automatically in terminal buffers
 vim.api.nvim_create_autocmd("TermOpen", {
   group = augroup,

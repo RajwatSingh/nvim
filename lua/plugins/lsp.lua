@@ -17,14 +17,15 @@ return {
           -- startup. Install manually instead: :MasonInstallTools
           vim.api.nvim_create_user_command("MasonInstallTools", function()
             require("mason-registry").refresh(function()
-              for _, tool in ipairs({ "stylua", "prettierd", "gofumpt", "goimports" }) do
+              -- delve is the Go debugger behind nvim-dap-go
+              for _, tool in ipairs({ "stylua", "prettierd", "gofumpt", "goimports", "delve" }) do
                 local ok, pkg = pcall(require("mason-registry").get_package, tool)
                 if ok and not pkg:is_installed() then
                   pkg:install()
                 end
               end
             end)
-          end, { desc = "Install formatter tools via Mason (stylua, prettierd)" })
+          end, { desc = "Install external tools via Mason (formatters + delve)" })
         end,
       },
       "mason-org/mason-lspconfig.nvim",
@@ -71,7 +72,34 @@ return {
           gopls = {
             gofumpt = true,
             staticcheck = true,
-            analyses = { unusedparams = true },
+            usePlaceholders = true, -- fill in parameter names when completing a call
+            completeUnimported = true, -- offer symbols from packages not yet imported
+            directoryFilters = { "-.git", "-node_modules", "-vendor" },
+            analyses = {
+              unusedparams = true,
+              unusedwrite = true,
+              nilness = true,
+              useany = true,
+              shadow = true,
+            },
+            -- Shown by <leader>ch (toggle inlay hints)
+            hints = {
+              assignVariableTypes = true,
+              compositeLiteralFields = true,
+              compositeLiteralTypes = true,
+              constantValues = true,
+              functionTypeParameters = true,
+              parameterNames = true,
+              rangeVariableTypes = true,
+            },
+            -- Actionable lenses above funcs / go.mod (run via <leader>cl)
+            codelenses = {
+              generate = true,
+              test = true,
+              tidy = true,
+              upgrade_dependency = true,
+              vendor = true,
+            },
           },
         },
       })
@@ -116,22 +144,42 @@ return {
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = buf }), { bufnr = buf })
             end, "Toggle inlay hints")
           end
+
+          -- Code lenses (gopls: run test, go mod tidy, generate, ...).
+          -- enable() keeps them refreshed on its own; no autocmd needed.
+          if client and client:supports_method("textDocument/codeLens") then
+            nmap("<leader>cl", vim.lsp.codelens.run, "Run code lens")
+            vim.lsp.codelens.enable(true, { bufnr = buf })
+          end
         end,
       })
 
+      local servers = {
+        "lua_ls",
+        "pyright",
+        "ruff",
+        "gopls",
+        "ts_ls",
+        "html",
+        "cssls",
+        "jsonls",
+      }
+
       require("mason-lspconfig").setup({
-        ensure_installed = {
-          "lua_ls",
-          "pyright",
-          "ruff",
-          "gopls",
-          "ts_ls",
-          "html",
-          "cssls",
-          "jsonls",
-        },
+        ensure_installed = servers,
         automatic_enable = true, -- vim.lsp.enable() installed servers automatically
       })
+
+      -- automatic_enable only covers servers Mason itself installed. gopls is
+      -- normally installed with `go install` (into $GOPATH/bin), so Mason never
+      -- enables it. Enable any configured server whose binary is on PATH;
+      -- vim.lsp.enable() is idempotent, so overlapping with Mason is fine.
+      for _, server in ipairs(servers) do
+        local cmd = (vim.lsp.config[server] or {}).cmd
+        if type(cmd) == "table" and vim.fn.executable(cmd[1]) == 1 then
+          vim.lsp.enable(server)
+        end
+      end
     end,
   },
 }

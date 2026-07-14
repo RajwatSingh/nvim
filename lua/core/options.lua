@@ -5,6 +5,17 @@ local opt = vim.opt
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
+-- `go install` drops binaries in $GOBIN (default $GOPATH/bin), which isn't on
+-- the login PATH here. Add it so gopher.nvim's helpers (gomodifytags, impl,
+-- iferr, gotests) and any hand-installed dlv/gopls are found.
+do
+  local gobin = vim.env.GOBIN
+  if not gobin or gobin == "" then
+    gobin = (vim.env.GOPATH or (vim.env.HOME .. "/go")) .. "/bin"
+  end
+  vim.env.PATH = gobin .. ":" .. vim.env.PATH
+end
+
 -- UI
 opt.number = true -- absolute number on the cursor line
 opt.relativenumber = true -- relative numbers everywhere else
