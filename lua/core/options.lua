@@ -6,8 +6,8 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
 -- `go install` drops binaries in $GOBIN (default $GOPATH/bin), which isn't on
--- the login PATH here. Add it so gopher.nvim's helpers (gomodifytags, impl,
--- iferr, gotests) and any hand-installed dlv/gopls are found.
+-- the login PATH here. Add it so go-installed gopls / goimports / gofumpt are
+-- found by the LSP and formatter.
 do
   local gobin = vim.env.GOBIN
   if not gobin or gobin == "" then

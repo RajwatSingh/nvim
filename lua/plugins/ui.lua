@@ -59,7 +59,7 @@ return {
         { "<leader>h", group = "git hunks" },
         { "<leader>s", group = "split / search" },
         { "<leader>t", group = "terminal" },
-        { "<leader>x", group = "quickfix / trouble" },
+        { "<leader>x", group = "quickfix" },
       },
     },
     keys = {

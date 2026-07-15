@@ -18,7 +18,6 @@ return {
         menu = { border = "rounded" },
         ghost_text = { enabled = false }, -- no gray inline preview as you type
       },
-      signature = { enabled = true, window = { border = "rounded" } },
       sources = {
         default = { "lsp", "path", "snippets", "buffer" },
       },

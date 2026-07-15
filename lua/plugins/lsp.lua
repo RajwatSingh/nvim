@@ -17,15 +17,14 @@ return {
           -- startup. Install manually instead: :MasonInstallTools
           vim.api.nvim_create_user_command("MasonInstallTools", function()
             require("mason-registry").refresh(function()
-              -- delve is the Go debugger behind nvim-dap-go
-              for _, tool in ipairs({ "stylua", "prettierd", "gofumpt", "goimports", "delve" }) do
+              for _, tool in ipairs({ "stylua", "prettierd", "gofumpt", "goimports" }) do
                 local ok, pkg = pcall(require("mason-registry").get_package, tool)
                 if ok and not pkg:is_installed() then
                   pkg:install()
                 end
               end
             end)
-          end, { desc = "Install external tools via Mason (formatters + delve)" })
+          end, { desc = "Install external formatters via Mason" })
         end,
       },
       "mason-org/mason-lspconfig.nvim",
@@ -82,24 +81,6 @@ return {
               useany = true,
               shadow = true,
             },
-            -- Shown by <leader>ch (toggle inlay hints)
-            hints = {
-              assignVariableTypes = true,
-              compositeLiteralFields = true,
-              compositeLiteralTypes = true,
-              constantValues = true,
-              functionTypeParameters = true,
-              parameterNames = true,
-              rangeVariableTypes = true,
-            },
-            -- Actionable lenses above funcs / go.mod (run via <leader>cl)
-            codelenses = {
-              generate = true,
-              test = true,
-              tidy = true,
-              upgrade_dependency = true,
-              vendor = true,
-            },
           },
         },
       })
@@ -136,21 +117,6 @@ return {
           nmap("<leader>cr", vim.lsp.buf.rename, "Rename symbol")
           nmap("<leader>ca", vim.lsp.buf.code_action, "Code action")
           nmap("<leader>cs", ok and builtin.lsp_document_symbols or vim.lsp.buf.document_symbol, "Document symbols")
-
-          -- Inlay hints toggle (Neovim 0.10+)
-          local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if client and client:supports_method("textDocument/inlayHint") then
-            nmap("<leader>ch", function()
-              vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = buf }), { bufnr = buf })
-            end, "Toggle inlay hints")
-          end
-
-          -- Code lenses (gopls: run test, go mod tidy, generate, ...).
-          -- enable() keeps them refreshed on its own; no autocmd needed.
-          if client and client:supports_method("textDocument/codeLens") then
-            nmap("<leader>cl", vim.lsp.codelens.run, "Run code lens")
-            vim.lsp.codelens.enable(true, { bufnr = buf })
-          end
         end,
       })
 
