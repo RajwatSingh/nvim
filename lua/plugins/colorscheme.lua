@@ -20,24 +20,26 @@ return {
       flavour = "mocha", -- "latte" | "frappe" | "macchiato" | "mocha"
       transparent_background = true, -- let the terminal background show through
       -- Neon Tide palette — same color roles Catppuccin uses, retinted.
-      -- Engineered in OKLCH: accents sit at uniform perceived lightness with
-      -- max in-gamut chroma, hues spaced >=42deg, every accent >=6:1 on base.
+      -- Accents sit at uniform perceived lightness with moderate chroma (dialed
+      -- back from the original max-chroma neon so everyday syntax stays calm),
+      -- hues spaced >=42deg, every accent >=6:1 on base. The reserved `pop` cyan
+      -- keeps full chroma so it stands out against the quieter accents.
       color_overrides = {
         mocha = {
-          rosewater = "#f3c0b7",
-          flamingo = "#f5a3b5",
-          pink = "#fa8cd7",
-          mauve = "#b888fa", -- vivid violet (keywords)
-          red = "#f9667a", -- coral
-          maroon = "#f8869a",
-          peach = "#fe9557",
-          yellow = "#f2ce59", -- warm gold (types, focus)
-          green = "#7cd06a", -- strings/diff-add; calmer than the pop cyan
-          teal = "#11d6a4", -- mint-teal
-          sky = "#11d6e7",
-          sapphire = "#02c2fa",
-          blue = "#6aaafe", -- vibrant azure (functions)
-          lavender = "#aab4fe",
+          rosewater = "#e8bdb6",
+          flamingo = "#e5a1af",
+          pink = "#d99cc7", -- muted rose
+          mauve = "#a892dc", -- softened violet (keywords)
+          red = "#e37d8b", -- muted coral
+          maroon = "#e08a99",
+          peach = "#e8a077",
+          yellow = "#e2c887", -- softer gold (types, focus)
+          green = "#8fbe7e", -- sage strings/diff-add
+          teal = "#5cb89f", -- muted mint-teal
+          sky = "#74bccc",
+          sapphire = "#6cabd0",
+          blue = "#84a8de", -- softened azure (functions)
+          lavender = "#a7b0de",
           text = "#d5dde7",
           subtext1 = "#adb7c2",
           subtext0 = "#95a1af",
@@ -46,15 +48,14 @@ return {
           overlay0 = "#4f5c6a",
           surface2 = "#323e4c",
           surface1 = "#242f3b",
-          surface0 = "#19232d",
-          base = "#0c151d",
-          mantle = "#080f17",
-          crust = "#050b11",
+          surface0 = "#1b2530",
+          base = "#0e1720",
+          mantle = "#0a121a",
+          crust = "#060d13",
         },
       },
       styles = {
         comments = { "italic" },
-        keywords = { "bold" },
       },
       -- Only the integrations for plugins actually in this config.
       integrations = {
