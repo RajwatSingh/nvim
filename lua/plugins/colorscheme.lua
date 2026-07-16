@@ -1,8 +1,8 @@
--- Neon Tide: deep midnight-navy base with vibrant azure, mint-teal, coral and
--- gold accents, plus an electric-cyan pop. Built on Catppuccin Mocha, recolored
--- via color_overrides so all integrations keep working. Transparent so the
--- terminal background shows through.
--- Mirrored in ~/.config/ghostty/themes/NeonTide and the [palettes.neon_tide]
+-- Slack Tide: calm OKLCH re-tune of Neon Tide — royal-velvet text, gold focus,
+-- azure/violet structure on deep navy, plus an electric-cyan pop. Built on
+-- Catppuccin Mocha, recolored via color_overrides so all integrations keep
+-- working. Transparent so the terminal background shows through.
+-- Mirrored in ~/.config/ghostty/themes/SlackTide and the [palettes.neon_tide]
 -- block of ~/.config/starship.toml — keep the three in sync.
 return {
   "catppuccin/nvim",
@@ -19,39 +19,39 @@ return {
     require("catppuccin").setup({
       flavour = "mocha", -- "latte" | "frappe" | "macchiato" | "mocha"
       transparent_background = true, -- let the terminal background show through
-      -- Neon Tide palette — same color roles Catppuccin uses, retinted.
-      -- Accents sit at uniform perceived lightness with moderate chroma (dialed
-      -- back from the original max-chroma neon so everyday syntax stays calm),
-      -- hues spaced >=42deg, every accent >=6:1 on base. The reserved `pop` cyan
-      -- keeps full chroma so it stands out against the quieter accents.
+      -- Slack Tide palette — same color roles Catppuccin uses, retinted.
+      -- Same OKLCH pipeline as the Ghostty theme: uniform accent lightness,
+      -- chroma ~0.08–0.13, every accent >=5.7:1 on the terminal background.
+      -- Text is the royal velvet of the shell; keywords a deeper violet so
+      -- they separate from it. The reserved `pop` cyan keeps full chroma.
       color_overrides = {
         mocha = {
-          rosewater = "#e8bdb6",
-          flamingo = "#e5a1af",
-          pink = "#d99cc7", -- muted rose
-          mauve = "#a892dc", -- softened violet (keywords)
-          red = "#e37d8b", -- muted coral
-          maroon = "#e08a99",
-          peach = "#e8a077",
-          yellow = "#e2c887", -- softer gold (types, focus)
-          green = "#8fbe7e", -- sage strings/diff-add
-          teal = "#5cb89f", -- muted mint-teal
-          sky = "#74bccc",
-          sapphire = "#6cabd0",
-          blue = "#84a8de", -- softened azure (functions)
-          lavender = "#a7b0de",
-          text = "#d5dde7",
-          subtext1 = "#adb7c2",
-          subtext0 = "#95a1af",
-          overlay2 = "#7e8b99",
-          overlay1 = "#677583",
-          overlay0 = "#4f5c6a",
-          surface2 = "#323e4c",
-          surface1 = "#242f3b",
-          surface0 = "#1b2530",
-          base = "#0e1720",
-          mantle = "#0a121a",
-          crust = "#060d13",
+          rosewater = "#ddbbb5",
+          flamingo = "#deabae",
+          pink = "#dba4c8", -- muted rose
+          mauve = "#a584dc", -- deep violet (keywords) — darker than the velvet text
+          red = "#de9491", -- calm coral
+          maroon = "#e49a9f",
+          peach = "#cc9e68", -- amber, matches shell warnings
+          yellow = "#ebc573", -- gold (types, focus) — matches typed-command gold
+          green = "#81bb8d", -- sage strings/diff-add
+          teal = "#62beb0", -- muted teal
+          sky = "#81c4d0",
+          sapphire = "#74b5d4",
+          blue = "#84aee3", -- azure (functions)
+          lavender = "#afb4de",
+          text = "#c8b3e3", -- royal velvet, same as Ghostty foreground
+          subtext1 = "#a5acb2",
+          subtext0 = "#9299a1",
+          overlay2 = "#80878f",
+          overlay1 = "#69737d",
+          overlay0 = "#454e58",
+          surface2 = "#364452",
+          surface1 = "#273442",
+          surface0 = "#1d2732",
+          base = "#141b24",
+          mantle = "#0e141c",
+          crust = "#080e14",
         },
       },
       styles = {
@@ -89,7 +89,7 @@ return {
           -- Catppuccin maps Comment to overlay0, which is only 2.7:1 on this
           -- base. This hex is 4.7:1 (WCAG AA). Overridden directly rather than
           -- by lifting overlay0, which LineNr depends on.
-          Comment = { fg = "#768297", style = { "italic" } },
+          Comment = { fg = "#7d8792", style = { "italic" } },
           WinSeparator = { fg = c.surface2 },
 
           -- The pop tier. Search lands on the current match only, so the other
