@@ -1,6 +1,6 @@
 # Neovim Config
 
-A lightweight Neovim setup — LSP, fuzzy finding, treesitter, git, quick file marks (harpoon), and format-on-save, themed with **Catppuccin Mocha**.
+A lightweight Neovim setup — LSP, fuzzy finding, treesitter, git, quick file marks (harpoon), and on-demand formatting, themed with **Rosé Pine Moon** (transparent background, so the terminal shows through).
 
 - **Leader key:** `Space`
 - **Discoverability:** press `<leader>` and pause — **which-key** shows the menu. Or `<leader>fk` to fuzzy-search every keymap.
@@ -21,10 +21,14 @@ A lightweight Neovim setup — LSP, fuzzy finding, treesitter, git, quick file m
 | `lazygit`           | git TUI (`<leader>gg`)             |
 | `glow`              | markdown preview (`<leader>mp`)    |
 | `fd` _(optional)_   | faster file finding                |
+| `go` _(optional)_   | Go development (gopls, gofumpt, goimports) |
 | A Nerd Font         | icons (select it in your terminal) |
 
-LSP servers & formatters install themselves via **mason** on first launch
-(`lua_ls`, `pyright`, `ruff`, `ts_ls`, `html`, `cssls`, `jsonls`; `stylua`, `prettierd`).
+LSP servers install themselves via **mason** on first launch
+(`lua_ls`, `pyright`, `ruff`, `gopls`, `ts_ls`, `html`, `cssls`, `jsonls`).
+Formatters (`stylua`, `prettierd`, `gofumpt`, `goimports`) are **not**
+auto-installed — run `:MasonInstallTools` once (or install them yourself;
+go-installed binaries in `$GOBIN`/`$GOPATH/bin` are found automatically).
 
 ### Install
 
@@ -61,9 +65,10 @@ winget install --id Microsoft.VisualStudio.2022.BuildTools   # C compiler / make
 ### First launch
 
 1. `nvim` — lazy.nvim bootstraps and installs all plugins.
-2. Restart. Mason installs LSP servers/formatters in the background (`:Mason` to watch).
-3. With `gcc` present, treesitter parsers compile automatically. Add more anytime:
-   `:TSInstall python typescript tsx javascript html css json`.
+2. Restart. Mason installs LSP servers in the background (`:Mason` to watch).
+3. Run `:MasonInstallTools` to install the formatters (`stylua`, `prettierd`, `gofumpt`, `goimports`).
+4. With `gcc` present, treesitter parsers compile automatically. Add more anytime:
+   `:TSInstall python go typescript tsx javascript html css json`.
 
 ---
 
@@ -81,7 +86,8 @@ winget install --id Microsoft.VisualStudio.2022.BuildTools   # C compiler / make
 | `<` / `>` _(visual)_   | Indent left / right, keep selection               |
 | `<leader>w` / `<C-s>`  | Save file (`<C-s>` works in any mode)             |
 | `<leader>q`            | Quit window                                       |
-| `<leader>fn`           | New empty file                                    |
+| `<leader>fn`           | New file (prompts for path, creates folders)      |
+| `<leader>fN`           | New folder (prompts for path)                     |
 | `<leader>p` _(visual)_ | Paste over selection, keep yank register          |
 | `<leader>d`            | Delete without yanking                            |
 | `<leader>sr`           | Replace the word under the cursor in file         |
@@ -180,7 +186,11 @@ _Inside the tree:_ `<CR>` open · `a` create · `d` delete · `r` rename · `x`/
 | `<leader>ca` | Code action                                    |
 | `<leader>cs` | Document symbols                               |
 | `<leader>cf` | Format buffer (also works in visual mode)      |
-| `<leader>ch` | Toggle inlay hints (servers that support them) |
+
+Formatting is **manual** (no format-on-save) via conform.nvim: `stylua` for
+Lua, `ruff` for Python, `gofumpt` + `goimports` for Go, `prettierd` for
+web/JSON/YAML/Markdown — falling back to the LSP formatter otherwise. Go
+buffers use hard tabs (width 4), per gofmt convention.
 
 ### Diagnostics
 
