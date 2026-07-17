@@ -9,7 +9,7 @@ return {
     event = "VeryLazy",
     opts = {
       options = {
-        theme = "catppuccin-mocha",
+        theme = "rose-pine",
         globalstatus = true,
         component_separators = { left = "", right = "" },
         section_separators = { left = "", right = "" },
@@ -27,7 +27,8 @@ return {
   },
 
   -- Indent guides + a static current-scope line. The scope highlight snaps
-  -- instantly (no animation) and is themed by catppuccin's IblScope group.
+  -- instantly (no animation) and is themed via the IblScope override in
+  -- plugins/colorscheme.lua.
   {
     "lukas-reineke/indent-blankline.nvim",
     main = "ibl",
