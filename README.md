@@ -1,6 +1,6 @@
 # Neovim Config
 
-A lightweight Neovim setup — LSP, fuzzy finding, treesitter, git, quick file marks (harpoon), and on-demand formatting, themed with **Rosé Pine Moon** (transparent background, so the terminal shows through).
+A lightweight Neovim setup — LSP, fuzzy finding, treesitter, git, quick file marks (harpoon), and on-demand formatting, themed with **Rosé Pine Moon** (transparent background, so the terminal shows through — in [Ghostty](../ghostty) that's the custom Slack Tide navy).
 
 - **Leader key:** `Space`
 - **Discoverability:** press `<leader>` and pause — **which-key** shows the menu. Or `<leader>fk` to fuzzy-search every keymap.
@@ -22,7 +22,7 @@ A lightweight Neovim setup — LSP, fuzzy finding, treesitter, git, quick file m
 | `glow`              | markdown preview (`<leader>mp`)    |
 | `fd` _(optional)_   | faster file finding                |
 | `go` _(optional)_   | Go development (gopls, gofumpt, goimports) |
-| A Nerd Font         | icons (select it in your terminal) |
+| A Nerd Font         | icons (select it in your terminal) — not needed in Ghostty, which has built-in Nerd symbols |
 
 LSP servers install themselves via **mason** on first launch
 (`lua_ls`, `pyright`, `ruff`, `gopls`, `ts_ls`, `html`, `cssls`, `jsonls`).
@@ -60,7 +60,7 @@ winget install Neovim.Neovim Git.Git OpenJS.NodeJS BurntSushi.ripgrep.MSVC Jesse
 winget install --id Microsoft.VisualStudio.2022.BuildTools   # C compiler / make
 ```
 
-> A [Nerd Font](https://www.nerdfonts.com/) is required on every platform for icons (e.g. `JetBrainsMono Nerd Font`).
+> A [Nerd Font](https://www.nerdfonts.com/) is required for icons (e.g. `JetBrainsMono Nerd Font`) — unless your terminal is Ghostty, whose built-in Nerd Font fallback covers the glyphs with any monospace font.
 
 ### First launch
 

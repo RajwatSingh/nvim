@@ -1,9 +1,9 @@
 -- Rosé Pine Moon: muted, low-contrast-but-legible palette for long sessions.
 -- Stock palette, small hue budget (rose/gold/foam/iris/pine/love), no neon.
 -- Gold is the focus tier (current line number, search, Telescope matches);
--- everything else stays quiet. Transparent so the terminal shows through.
--- Mirrored in ~/.config/ghostty/themes/RosePineMoon and the
--- [palettes.rose_pine_moon] block of ~/.config/starship.toml — keep in sync.
+-- everything else stays quiet. Transparent so the terminal shows through —
+-- in practice that's the Slack Tide navy from ~/.config/ghostty/themes/SlackTide
+-- (a deliberately different palette; Rosé Pine's muted hues sit fine on it).
 return {
   "rose-pine/neovim",
   name = "rose-pine",
