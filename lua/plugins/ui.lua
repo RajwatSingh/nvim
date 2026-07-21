@@ -58,6 +58,7 @@ return {
         { "<leader>f", group = "find (telescope)" },
         { "<leader>g", group = "git" },
         { "<leader>h", group = "git hunks" },
+        { "<leader>m", group = "markdown" },
         { "<leader>s", group = "split / search" },
         { "<leader>t", group = "terminal" },
         { "<leader>x", group = "quickfix" },

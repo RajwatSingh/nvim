@@ -161,8 +161,9 @@ map("n", "<leader>sr", [[:%s/\<<C-r><C-w>\>//g<Left><Left>]], { desc = "Replace 
 map("n", "<leader>tv", "<cmd>vertical terminal<cr>", { desc = "Vertical terminal" })
 map("n", "<leader>th", "<cmd>split | terminal<cr>", { desc = "Horizontal terminal" })
 
--- Markdown preview: render the current file in a floating window via glow.
-map("n", "<leader>mp", function()
+-- Quick terminal-only render via glow. The richer previews (inline + browser)
+-- live on <leader>mr / <leader>mp in plugins/markdown.lua.
+map("n", "<leader>mg", function()
   local file = vim.api.nvim_buf_get_name(0)
   if file == "" or vim.bo.filetype ~= "markdown" then
     vim.notify("Not a markdown buffer", vim.log.levels.WARN, { title = "glow" })
